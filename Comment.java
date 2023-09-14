@@ -40,6 +40,19 @@ public class Comment {
         replied_comments.add(comment);
     }
 
+    public void Edit(String TEXT){
+        this.text=TEXT;
+    }
+
+    public int getLikes(){
+        return likes;
+    }
+
+    public int getReplies(){
+        return replied_comments.size();
+    }
+
+
 
 
 }
