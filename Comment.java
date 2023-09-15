@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 
 public class Comment {
-   // private static int char_limit=200;
-    // I thought it's better to check if the text characters are <=char_limit ,before we pass it as a parameter ,so we won't have to check it inside the constructor.
+    private static int char_limit=250;
     private int likes;
     private String text;
     private ArrayList<Comment> replied_comments;
 
     public Comment(String TEXT){
         likes=0;
-        this.text = TEXT;
         replied_comments=new ArrayList<>();
+        TEXT=Check_char_count(TEXT);
+        this.text = TEXT;
     }
 
     /*
@@ -36,11 +36,13 @@ public class Comment {
     */
 
     public void Reply(String TEXT){
+        TEXT=Check_char_count(TEXT);
         Comment comment=new Comment(TEXT);
         replied_comments.add(comment);
     }
 
     public void Edit(String TEXT){
+        TEXT=Check_char_count(TEXT);
         this.text=TEXT;
     }
 
@@ -50,6 +52,16 @@ public class Comment {
 
     public int getReplies(){
         return replied_comments.size();
+    }
+
+    public String getText() {
+        return text;
+    }
+    public String Check_char_count(String TEXT){
+        if (TEXT.length()>char_limit){
+            return TEXT.substring(0,char_limit-1);
+        }
+        return TEXT;
     }
 
 
