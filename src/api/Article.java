@@ -1,3 +1,7 @@
+package api;
+
+import api.Comment;
+
 import java.util.ArrayList;
 public class Article {
     private static int char_limit=1000;
