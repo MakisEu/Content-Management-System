@@ -4,10 +4,11 @@ package api;
  * Base class every type of content inherits
  */
 public class Content{
-	String Title;
+	private static int nextID=0;
+	String Title,user,ID;
 	Body BodyPost;
-	int charLimit;
-	int votes=0;
+	int charLimit,votes=0;
+
 
 	/**
 	 * @param Title
@@ -15,10 +16,14 @@ public class Content{
 	 * @param charLimit
 	 * Simple constructor for creating a piece of content
 	 */
-	public Content(String Title, Body BodyPost, int charLimit){
+	public Content(String Title, Body BodyPost,String user, int charLimit){
 		this.Title=Title;
 		this.BodyPost = (Body) BodyPost;
+		this.user=user;
 		this.charLimit=charLimit;
+		this.ID="object#"+user+"#"+String.valueOf(nextID);
+		nextID++;
+
 	}
 
 	/**
@@ -69,5 +74,19 @@ public class Content{
 	 */
 	public void Dislike(){
 		votes--;
+	}
+
+	/**
+	 * @return the unique ID of the content
+	 */
+	public String getID() {
+		return ID;
+	}
+
+	/**
+	 * @return the name of the user that created the content
+	 */
+	public String getUser() {
+		return user;
 	}
 }

@@ -1,8 +1,9 @@
 package api;
 
 public class Post extends Content{
-    public Post(String Title, String text) {
-        super(Title, new BodyPost(text), 500);
+    public Post(String Title, String text,String user) {
+        super(Title, new BodyPost(text),user, 500);
+        this.ID=this.ID.replace("object","Post");
     }
 
     public String getText() {
