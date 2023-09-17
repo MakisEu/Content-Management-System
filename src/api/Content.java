@@ -4,7 +4,7 @@ package api;
  * Base class every type of content inherits
  */
 public class Content{
-	private static int nextID=0;
+	protected static int nextID=0;
 	String Title,user,ID;
 	Body BodyPost;
 	int charLimit,votes=0;
@@ -14,9 +14,9 @@ public class Content{
 	 * @param Title
 	 * @param BodyPost
 	 * @param charLimit
-	 * Simple constructor for creating a piece of content
+	 * Simple constructor for creating a piece of content (Can only be used from same class)
 	 */
-	public Content(String Title, Body BodyPost,String user, int charLimit){
+	Content(String Title, Body BodyPost, String user, int charLimit){
 		this.Title=Title;
 		this.BodyPost = (Body) BodyPost;
 		this.user=user;

@@ -1,34 +1,59 @@
 package api;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContentTest {
 
-    @org.junit.jupiter.api.Test
-    void getCharLimit() {
+    @BeforeEach
+    void setUp() {
+        Content.nextID=0;
     }
 
-    @org.junit.jupiter.api.Test
+    @AfterEach
+    void tearDown() {
+        ControlSystem.comments=null;
+        ControlSystem.content=null;
+        ControlSystem.liked=null;
+    }
+
+    @Test
+    void getCharLimit() {
+
+    }
+
+    @Test
     void getTitle() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getBody() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setTitle() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setBody() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void like() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void dislike() {
+    }
+
+    @Test
+    void getID() {
+    }
+
+    @Test
+    void getUser() {
     }
 }
