@@ -59,8 +59,8 @@ public class Content{
 	 * @param bodyPost
 	 * Set the body of the text
 	 */
-	public void setBody(BodyPost bodyPost) {
-		BodyPost = bodyPost;
+	public void setBody(Body bodyPost) {
+		BodyPost = (Body)bodyPost;
 	}
 
 	/**
@@ -74,6 +74,13 @@ public class Content{
 	 */
 	public void Dislike(){
 		votes--;
+	}
+
+	/**
+	 * @return The number of votes/likes
+	 */
+	public int getVotes() {
+		return votes;
 	}
 
 	/**

@@ -3,6 +3,9 @@ package api;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The Main Control Unit class for the CMS
+ */
 public class ControlSystem {
     protected static HashMap<String, ArrayList<Comment>>comments;
     protected static HashMap<String, HashMap<String,Integer>>liked; //TODO: Create a list n User that contains all (un)liked objects
