@@ -6,7 +6,7 @@ package api;
 public class Content{
 	protected static int nextID=0;
 	String Title,user,ID;
-	Body BodyPost;
+	Body Body;
 	int charLimit,votes=0;
 
 
@@ -18,7 +18,7 @@ public class Content{
 	 */
 	Content(String Title, Body BodyPost, String user, int charLimit){
 		this.Title=Title;
-		this.BodyPost = (Body) BodyPost;
+		this.Body = (Body) BodyPost;
 		this.user=user;
 		this.charLimit=charLimit;
 		this.ID="object#"+user+"#"+String.valueOf(nextID);
@@ -44,7 +44,7 @@ public class Content{
 	 * @return the body of the content
 	 */
 	public Body getBody() {
-		return BodyPost;
+		return Body;
 	}
 
 	/**
@@ -56,11 +56,11 @@ public class Content{
 	}
 
 	/**
-	 * @param bodyPost
+	 * @param body
 	 * Set the body of the text
 	 */
-	public void setBody(Body bodyPost) {
-		BodyPost = (Body)bodyPost;
+	public void setBody(Body body) {
+		this.Body = (Body)body;
 	}
 
 	/**

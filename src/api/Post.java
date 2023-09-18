@@ -11,8 +11,7 @@ public class Post extends Content{
      * @param user  The user that crated this post
      */
     public Post(String Title, String text,String user) {
-        super(Title, new BodyPost(text),user, charLimitPost);
-        this.ID=this.ID.replace("object","Post");
+        this(Title, text,user, charLimitPost);
     }
     public Post(String Title, String text,String user,int limit) {
         super(Title, new BodyPost(text),user, limit);

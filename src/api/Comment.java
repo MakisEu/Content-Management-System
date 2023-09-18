@@ -103,9 +103,12 @@ public class Comment {
         return Text;
     }
 
-
-
-
+    /**
+     * @return the creator of the comment
+     */
+    public String getUser() {
+        return user;
+    }
 }
 
 

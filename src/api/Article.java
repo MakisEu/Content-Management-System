@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Class for an article
  */
 public class Article extends Post{
-    private static int char_limit=1000;
+    private static int char_limit_Article=1000;
     private String author;
     private ArrayList<Comment> replied_comments;
 
@@ -21,8 +21,8 @@ public class Article extends Post{
      */
 
     public Article(String Author,String Title,String Text,String user){
-        super(Title,Text,user);
-        this.ID=this.ID.replace("object","Article");
+        super(Title,Text,user,char_limit_Article);
+        this.ID=this.ID.replace("Post","Article");
         this.author=Author;
     }
 
@@ -42,11 +42,17 @@ public class Article extends Post{
         return replied_comments.size();
     }
 
+    /**
+     * @param author The author of the article. Not necessarily the owner
+     */
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-
-
-
-
-
-
+    /**
+     * @return The author of the article.
+     */
+    public String getAuthor() {
+        return author;
+    }
 }

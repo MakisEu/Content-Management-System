@@ -52,4 +52,18 @@ public class ControlSystem {
         }
         return true;
     }
+    public boolean DeleteComment(Comment comment){
+        for (ArrayList<Comment> c: comments.values()) {
+            if (c.remove(comment)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public void DeleteContent(Content content){
+        String ContentID= content.getID();
+        comments.remove(ContentID);
+        liked.remove(ContentID);//TODO: Remove from liked(User) as well
+        this.content.remove(content.getUser()).remove(ContentID);
+    }
 }
