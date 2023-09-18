@@ -14,14 +14,16 @@ public class Post extends Content{
         super(Title, new BodyPost(text),user, charLimitPost);
         this.ID=this.ID.replace("object","Post");
     }
-
+    public Post(String Title, String text,String user,int limit) {
+        super(Title, new BodyPost(text),user, limit);
+        this.ID=this.ID.replace("object","Post");
+    }
     /**
      * @return The text of the post
      */
     public String getText() {
         return ((BodyPost)super.getBody()).getText();
     }
-
     /**
      * @param text The new text of the post
      * Changes the text of the post
