@@ -3,37 +3,42 @@ package api;
 import api.Comment;
 
 import java.util.ArrayList;
-public class Article {
+
+/**
+ * Class for an article
+ */
+public class Article extends Post{
     private static int char_limit=1000;
-    private int likes;
-    private String text,title,author;
+    private String author;
     private ArrayList<Comment> replied_comments;
 
-    public Article(String AUTHOR,String TITLE,String TEXT){
-        this.author=AUTHOR;
-        this.title=TITLE;
-        TEXT=Check_char_count(TEXT);
-        this.text=TEXT;
-        likes=0;
+    /**
+     *
+     * @param Author    The author of the article
+     * @param Title     The title of the article
+     * @param Text      The text of the article
+     * @param user      The user published the article
+     */
+
+    public Article(String Author,String Title,String Text,String user){
+        super(Title,Text,user);
+        this.ID=this.ID.replace("object","Article");
+        this.author=Author;
     }
 
-    public String Check_char_count(String TEXT){
-        if (TEXT.length()>char_limit){
-            return TEXT.substring(0,char_limit-1);
-        }
-        return TEXT;
-    }
-
-    public void Reply(String TEXT){
-        TEXT=Check_char_count(TEXT);
-        Comment comment=new Comment((TEXT));
+    /**
+     * @param Text the text of the replied comment
+     */
+    public void Reply(String Text){
+        Text=Check_char_count(Text);
+        Comment comment=new Comment((Text));
         replied_comments.add(comment);
     }
 
-    public int getLikes(){
-        return likes;
-    }
-
+    /**
+     *
+     * @return all the replied comments of a specific article
+     */
     public int getReplies(){
         return replied_comments.size();
     }
