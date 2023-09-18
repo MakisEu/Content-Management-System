@@ -5,14 +5,15 @@ import java.util.ArrayList;
 public class Comment {
     private static int char_limit=250;
     private int likes;
-    private String text;
+    private String text,user;
     private ArrayList<Comment> replied_comments;
 
-    public Comment(String TEXT){
+    public Comment(String TEXT,String user){
         likes=0;
         replied_comments=new ArrayList<>();
         TEXT=Check_char_count(TEXT);
         this.text = TEXT;
+        this.user=user;
     }
 
     /*
@@ -37,9 +38,9 @@ public class Comment {
 
     */
 
-    public void Reply(String TEXT){
+    public void Reply(String TEXT,String uid){
         TEXT=Check_char_count(TEXT);
-        Comment comment=new Comment(TEXT);
+        Comment comment=new Comment(TEXT,uid);
         replied_comments.add(comment);
     }
 

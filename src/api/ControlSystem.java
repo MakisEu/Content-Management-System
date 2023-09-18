@@ -7,19 +7,22 @@ import java.util.HashMap;
  * The Main Control Unit class for the CMS
  */
 public class ControlSystem {
+    //String=ContentID
     protected static HashMap<String, ArrayList<Comment>>comments;
-    protected static HashMap<String, HashMap<String,Integer>>liked; //TODO: Create a list n User that contains all (un)liked objects
-    protected static ArrayList<Content> content;
+    //First String=ContentID, Second String=UserId
+    protected static HashMap<String, HashMap<String,Integer>>liked;
+    //First String=UserId, Second String=Content.Title
+    protected static HashMap<String,HashMap<String,Content>> content;
     public ControlSystem(){
         comments=new HashMap<>();
         liked=new HashMap<>();
-        content=new ArrayList<>();
+        content=new HashMap<>();
     }
-    public boolean AddContent(Content content){
-        if (this.content.contains(content)){
+    public boolean AddContent(Content content,String uid){
+        if ((!this.content.get(uid).equals(null)) || (!this.content.get(uid).get(content.getTitle()).equals(null)) ){
             return false;
         }
-        this.content.add(content);
+        this.content.get(uid).put(content.getTitle(),content);
         return true;
     }
     public boolean AddComment(Comment comment,String contentID){

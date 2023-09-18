@@ -24,9 +24,9 @@ public class Article {
         return TEXT;
     }
 
-    public void Reply(String TEXT){
+    public void Reply(String TEXT,String uid){
         TEXT=Check_char_count(TEXT);
-        Comment comment=new Comment((TEXT));
+        Comment comment=new Comment((TEXT),uid);
         replied_comments.add(comment);
     }
 

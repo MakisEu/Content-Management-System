@@ -4,13 +4,14 @@ package api;
  * Class for a normal post
  */
 public class Post extends Content{
+    public static int charLimitPost =500;
     /**
      * @param Title The title of the post
      * @param text  The text of the post
      * @param user  The user that crated this post
      */
     public Post(String Title, String text,String user) {
-        super(Title, new BodyPost(text),user, 500);
+        super(Title, new BodyPost(text),user, charLimitPost);
         this.ID=this.ID.replace("object","Post");
     }
 
