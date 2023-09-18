@@ -1,6 +1,9 @@
 package api;
-
 import java.util.ArrayList;
+
+/**
+ * Base class for a Comment
+ */
 
 public class Comment {
     private static int char_limit=250;
@@ -8,11 +11,17 @@ public class Comment {
     private String text,user;
     private ArrayList<Comment> replied_comments;
 
-    public Comment(String TEXT,String user){
+    /**
+     *
+     * @param Text the text of the comment
+     * @param user the name of the creator
+     */
+
+    public Comment(String Text,String user){
         likes=0;
         replied_comments=new ArrayList<>();
-        TEXT=Check_char_count(TEXT);
-        this.text = TEXT;
+        Text=Check_char_count(Text);
+        this.text = Text;
         this.user=user;
     }
 
@@ -37,34 +46,61 @@ public class Comment {
     }
 
     */
-
-    public void Reply(String TEXT,String uid){
-        TEXT=Check_char_count(TEXT);
-        Comment comment=new Comment(TEXT,uid);
+    /**
+     *
+     * @param Text the text of the replied comment
+     */
+    public void Reply(String Text,String uid){
+        Text=Check_char_count(Text);
+        Comment comment=new Comment(Text,uid);
         replied_comments.add(comment);
     }
 
-    public void Edit(String TEXT){
-        TEXT=Check_char_count(TEXT);
-        this.text=TEXT;
+    /**
+     *
+     * @param Text the new text of the edited comment
+     */
+
+    public void Edit(String Text){
+        Text=Check_char_count(Text);
+        this.text=Text;
     }
 
+    /**
+     *
+     * @return return all the likes of a comment
+     */
     public int getLikes(){
         return likes;
     }
+
+    /**
+     *
+     * @return returns all the replies of a comment
+     */
 
     public int getReplies(){
         return replied_comments.size();
     }
 
+    /**
+     *
+     * @return returns the text of a comment
+     */
     public String getText() {
         return text;
     }
-    public String Check_char_count(String TEXT){
-        if (TEXT.length()>char_limit){
-            return TEXT.substring(0,char_limit-1);
+
+    /**
+     *
+     * @param   Text the text of a comment
+     * @return  the text, if text<=charLimit else returns the text but only with charLimit characters
+     */
+    public String Check_char_count(String Text){
+        if (Text.length()>char_limit){
+            return Text.substring(0,char_limit-1);
         }
-        return TEXT;
+        return Text;
     }
 
 

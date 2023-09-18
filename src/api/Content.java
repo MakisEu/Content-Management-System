@@ -96,4 +96,17 @@ public class Content{
 	public String getUser() {
 		return user;
 	}
+
+	/**
+	 *
+	 * @param 	Text The text of the content
+	 * @return 	the text, if text<=charLimit else returns the text but only with charLimit characters
+	 */
+
+	public String Check_char_count(String Text){
+		if (Text.length()>charLimit){
+			return Text.substring(0,charLimit-1);
+		}
+		return Text;
+	}
 }
