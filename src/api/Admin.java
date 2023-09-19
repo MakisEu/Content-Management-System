@@ -4,10 +4,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedReader;
 public class Admin extends User{
-    boolean isAdmin=true;
 
     public Admin(String id,ControlSystem system){
         super(id,system);
+        isAdmin=true;
     }
 
     public String Ban(User user) {
@@ -24,11 +24,6 @@ public class Admin extends User{
             return "This user got unbanned successfully!";
         }
         return "You cannot unban an unbanned user!";
-    }
-
-    public String deleteContent(Content content){
-        system.DeleteContent(content);
-        return "Content has been deleted.";
     }
 
 }
