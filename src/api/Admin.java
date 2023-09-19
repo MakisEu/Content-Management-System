@@ -28,19 +28,8 @@ public class Admin extends User{
 
     public String deleteContent(Content content){
         system.DeleteContent(content);
-        return ("Content has been deleted.");
+        return "Content has been deleted.";
     }
-
-
-    }
-
-
-
-
-
-
-
-
-
 
 }
+
