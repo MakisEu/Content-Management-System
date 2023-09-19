@@ -13,10 +13,17 @@ public class ControlSystem {
     protected static HashMap<String, HashMap<String,Integer>>liked;
     //First String=UserId, Second String=Content.Title
     protected static HashMap<String,HashMap<String,Content>> content;
+    protected static HashMap<String,Boolean> banned;
+
     public ControlSystem(){
         comments=new HashMap<>();
         liked=new HashMap<>();
         content=new HashMap<>();
+        banned=new HashMap<>();
+    }
+
+    public HashMap<String,Boolean> getBanned(){
+        return banned;
     }
     public boolean AddContent(Content content){
         String uid= content.getUser();
