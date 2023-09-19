@@ -18,11 +18,17 @@ public class ControlSystem {
         liked=new HashMap<>();
         content=new HashMap<>();
     }
-    public boolean AddContent(Content content,String uid){
-        if ((!this.content.get(uid).equals(null)) || (!this.content.get(uid).get(content.getTitle()).equals(null)) ){
+    public boolean AddContent(Content content){
+        String uid= content.getUser();
+        if (this.content.get(uid)==null){
+            this.content.put(uid,new HashMap<>());
+        }
+        if (!(this.content.get(uid).get(content.getTitle())==null)){
             return false;
         }
         this.content.get(uid).put(content.getTitle(),content);
+        comments.put(content.getID(),new ArrayList<>());
+        liked.put(content.getID(),new HashMap<>());
         return true;
     }
     public boolean AddComment(Comment comment,String contentID){
@@ -39,10 +45,10 @@ public class ControlSystem {
         if (update==0){
             return false;
         }
-        if (this.liked.get(content.getID()).equals(null)){
+        if (this.liked.get(content.getID())==null){
             return false;
         }
-        if (this.liked.get(content.getID()).get(user).equals(null) && update!=0){
+        if (this.liked.get(content.getID()).get(user)==null && update!=0){
             this.liked.get(content.getID()).put(user,update);
             return true;
         }
@@ -64,6 +70,6 @@ public class ControlSystem {
         String ContentID= content.getID();
         comments.remove(ContentID);
         liked.remove(ContentID);//TODO: Remove from liked(User) as well
-        this.content.remove(content.getUser()).remove(ContentID);
+        this.content.get(content.getUser()).remove(content.getTitle());
     }
 }

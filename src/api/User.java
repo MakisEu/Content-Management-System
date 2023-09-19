@@ -2,7 +2,6 @@ package api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 public class User {
     String userID;
@@ -34,7 +33,7 @@ public class User {
             }
         }
         if (!b.equals(null)){
-            if (system.AddContent(b,userID)){
+            if (system.AddContent(b)){
                 return "Added successfully,";
             }
             return "You already have content with the same title.";
@@ -95,5 +94,17 @@ public class User {
             }
         }
         return ("You do not have sufficient access right to edit this content.");
+    }
+
+    /**
+     * @param content The content that will be liked
+     */
+    public void LikeContent(Content content){
+    }
+
+    /**
+     * @param content The content that will be disliked
+     */
+    public void DislikeContent(Content content){
     }
 }
