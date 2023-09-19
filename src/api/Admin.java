@@ -10,20 +10,28 @@ public class Admin extends User{
         super(id,system);
     }
 
-    public String Ban(User user,ControlSystem controlSystem) {
-        if (controlSystem.getBanned().containsKey(user.userID)){
+    public String Ban(User user) {
+        if (system.getBanned().containsKey(user.userID)){
             return "This user is already banned!";
         }
-        controlSystem.getBanned().put(user.userID,true);
+        system.getBanned().put(user.userID,true);
         return "You banned this user successfully!";
     }
 
-    public String UnBan(User user,ControlSystem controlSystem){
-        if (controlSystem.getBanned().containsKey(user.userID)){
-            controlSystem.getBanned().remove(user.userID);
+    public String UnBan(User user){
+        if (system.getBanned().containsKey(user.userID)){
+            system.getBanned().remove(user.userID);
             return "This user got unbanned successfully!";
         }
         return "You cannot unban an unbanned user!";
+    }
+
+    public String deleteContent(Content content){
+        system.DeleteContent(content);
+        return ("Content has been deleted.");
+    }
+
+
     }
 
 
