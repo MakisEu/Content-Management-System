@@ -37,21 +37,63 @@ class ControlSystemTest {
 
         assertEquals(controlSystem.AddContent(article1),true);
         assertEquals(controlSystem.AddContent(article1),false);
-
-
-
     }
 
     @Test
     void addComment() {
+        ControlSystem controlSystem=new ControlSystem();
+        Post post1=new Post("This is a post that has no title","The post contains nothing","Noone");
+        Article article1=new Article("Totally legit author","No title","A text","me");
+        Post post2=new Post("title","LaText","you");
+        Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
+        Comment comment1=new Comment("Nice comment!","me");
+        Comment comment2=new Comment("Bad comment!","me");
+        assertEquals(controlSystem.AddComment(comment1,post1.getID()),true);
+        assertNotNull(ControlSystem.comments.get(post1.getID()));
+        assertEquals(controlSystem.AddComment(comment1,post1.getID()),false);
+        assertEquals(ControlSystem.comments.get(post1.getID()).contains(comment1),true);
+        assertEquals(controlSystem.AddComment(comment2,post1.getID()),true);
+        assertEquals(ControlSystem.comments.get(post1.getID()).contains(comment2),true);
+
+
     }
 
     @Test
     void updateLiked() {
+        ControlSystem controlSystem=new ControlSystem();
+        Post post1=new Post("This is a post that has no title","The post contains nothing","Noone");
+        Article article1=new Article("Totally legit author","No title","A text","me");
+        Post post2=new Post("title","LaText","you");
+        Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
+
+        assertEquals(controlSystem.updateLiked("Makis",post1,1),false);
+        controlSystem.AddContent(post1);
+        assertEquals(controlSystem.updateLiked("Makis",post1,1),true);
+        assertEquals(controlSystem.updateLiked("John",post1,1),true);
+        assertNotNull(ControlSystem.liked.get(post1.getID()).get("Makis"));
+        assertEquals(controlSystem.updateLiked("Makis",post1,-1),true);
+        assertNull(ControlSystem.liked.get(post1.getID()).get("Makis"));
     }
 
     @Test
     void deleteComment() {
+        ControlSystem controlSystem=new ControlSystem();
+        Post post1=new Post("This is a post that has no title","The post contains nothing","Noone");
+        Article article1=new Article("Totally legit author","No title","A text","me");
+        Post post2=new Post("title","LaText","you");
+        Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
+        Comment comment1=new Comment("Nice comment!","me");
+        Comment comment2=new Comment("Bad comment!","me");
+
+        controlSystem.AddComment(comment1,post1.getID());
+        String c1=post1.getID(),c2=article1.getID();
+        assertEquals(controlSystem.DeleteComment(comment1,c1),true);
+        assertEquals(controlSystem.DeleteComment(comment1,c1),false);
+        controlSystem.AddComment(comment1,c1);
+        controlSystem.AddComment(comment1,c2);
+        assertEquals(controlSystem.DeleteComment(comment1,c1),true);
+        assertEquals(controlSystem.DeleteComment(comment1,c2),true);
+
     }
 
     @Test
@@ -70,6 +112,10 @@ class ControlSystemTest {
         assertNotNull(ControlSystem.content.get(post1.getUser()).get(post1.getTitle()));
         controlSystem.DeleteContent(post1);
         assertNull(ControlSystem.content.get(post1.getUser()).get(post1.getTitle()));
+    }
+
+    @Test
+    void getBanned() {
     }
 
 }

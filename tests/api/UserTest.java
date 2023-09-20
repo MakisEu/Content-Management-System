@@ -10,14 +10,27 @@ class UserTest {
 
     @BeforeEach
     void setUp() {
+        Content.nextID=0;
+
     }
 
     @AfterEach
     void tearDown() {
+        ControlSystem.comments=null;
+        ControlSystem.content=null;
+        ControlSystem.liked=null;
     }
 
     @Test
     void addContent() {
+        ControlSystem controlSystem=new ControlSystem();
+        User user1=new User("Makis",controlSystem);
+
+
+        assertEquals(user1.AddContent("Article","My title",new BodyArticle("Ignore this text"),null),"Added successfully.");
+        assertNotNull(ControlSystem.content.get(user1.userID).get("My title"));
+        assertEquals(user1.AddContent("Article","My title",new BodyArticle("Ignore this text"),null),"You already have content with the same title.");
+
     }
 
     @Test

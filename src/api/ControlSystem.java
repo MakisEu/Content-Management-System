@@ -39,7 +39,7 @@ public class ControlSystem {
         return true;
     }
     public boolean AddComment(Comment comment,String contentID){
-        if (this.comments.get(contentID).equals(null)){
+        if (this.comments.get(contentID)==null){
             this.comments.put(contentID,new ArrayList<>());
         }
         if (this.comments.get(contentID).contains(comment)){
@@ -65,11 +65,10 @@ public class ControlSystem {
         }
         return true;
     }
-    public boolean DeleteComment(Comment comment){
-        for (ArrayList<Comment> c: comments.values()) {
-            if (c.remove(comment)){
-                return true;
-            }
+    public boolean DeleteComment(Comment comment,String contentID){
+        ArrayList<Comment> c=comments.get(contentID);
+        if (c!=null){
+            return c.remove(comment);
         }
         return false;
     }

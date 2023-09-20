@@ -13,7 +13,7 @@ public class User {
         this.system=system;
         liked=new ArrayList<>();
     }
-    public String AddContent(String type, String Title,Body body){
+    public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
         switch (type){
             case ("Post"):{
@@ -30,11 +30,24 @@ public class User {
             case ("Article"):{
                 //Create Article
                 //TODO
+                BodyArticle ba=((BodyArticle) body);
+                String author=null;
+                if (extras!=null && extras.get("Author")!=null){
+                    author=extras.get("Author");
+                }
+                if (ba.getText().length()<Post.charLimitPost) {
+                    Article p = new Article(author,Title, ba.getText(), userID);
+                    b=p;
+                }
+                else {
+                    return ("Max Limit of the Post's Text Exceeded by"+String.valueOf(ba.getText().length()-Post.charLimitPost)+"Characters.");
+                }
+
             }
         }
-        if (!b.equals(null)){
+        if (!(b==null)){
             if (system.AddContent(b)){
-                return "Added successfully,";
+                return "Added successfully.";
             }
             return "You already have content with the same title.";
         }
@@ -58,9 +71,9 @@ public class User {
         }
         return ("You do not have sufficient access right to edit this comment.");
     }
-    public String DeleteComment(Comment comment){
+    public String DeleteComment(Comment comment,String contentID){
         if (comment.getUser().equals(userID) || isAdmin) {
-            system.DeleteComment(comment);
+            system.DeleteComment(comment,contentID);
             return ("Comment has been deleted.");
         }
         return ("You do not have sufficient access right to delete this comment.");
