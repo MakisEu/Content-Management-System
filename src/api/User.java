@@ -2,16 +2,19 @@ package api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class User {
     String userID;
     boolean isAdmin=false;
     ArrayList<String> liked;
+    ArrayList<Vector<String>> myComments;
     ControlSystem system;
     public User(String id,ControlSystem system){
         userID=id;
         this.system=system;
         liked=new ArrayList<>();
+        myComments=new ArrayList<>();
     }
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
@@ -29,7 +32,6 @@ public class User {
             }
             case ("Article"):{
                 //Create Article
-                //TODO
                 BodyArticle ba=((BodyArticle) body);
                 String author=null;
                 if (extras!=null && extras.get("Author")!=null){
@@ -55,25 +57,38 @@ public class User {
             return "Incorrect type. Addition failed.";
         }
     }
-    public String AddComment(String text,Content content){
+    public String AddComment(String text,String contentID){
         Comment comment=new Comment(text,userID);
-        if (system.AddComment(comment,content.getID())){
+        String s=system.AddComment(comment,contentID);
+        if (s!=null){
+            Vector v=new Vector<>();
+            v.add(contentID);
+            v.add(s);
+            myComments.add(v);
             return "Added successfully.";
         }
         else{
             return "This comment already exist.";
         }
     }
-    public String EditComment(Comment comment,String text) {
+    public String EditComment(String commentID,String text) {
+        Comment comment=this.getComment(commentID);
+        if (comment==null){
+            return "This comment does not exist";
+        }
         if (comment.getUser().equals(userID) || isAdmin) {
             comment.Edit(text);
             return ("Comment has been edited.");
         }
         return ("You do not have sufficient access right to edit this comment.");
     }
-    public String DeleteComment(Comment comment,String contentID){
+    public String DeleteComment(String commentID,String contentID){
+        Comment comment=getComment(commentID);
+        if (comment==null){
+            return "This comment does not exist";
+        }
         if (comment.getUser().equals(userID) || isAdmin) {
-            system.DeleteComment(comment,contentID);
+            system.DeleteComment(commentID,contentID);
             return ("Comment has been deleted.");
         }
         return ("You do not have sufficient access right to delete this comment.");
@@ -119,5 +134,22 @@ public class User {
      * @param content The content that will be disliked
      */
     public void DislikeContent(Content content){
+    }
+    public Comment getComment(String commentID){
+        Comment c=null;
+        for (Vector<String> v:myComments){
+            if (v.get(1)==commentID) {
+                ArrayList<Comment> coms = ControlSystem.comments.get(v.get(0)).get(v.get(1).split("#")[0]);
+                if (coms != null) {
+                    for (Comment com : coms) {
+                        if (com.getId() == commentID) {
+                            return com;
+                        }
+                    }
+                    return c;
+                }
+            }
+        }
+        return c;
     }
 }

@@ -48,12 +48,12 @@ class ControlSystemTest {
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
         Comment comment1=new Comment("Nice comment!","me");
         Comment comment2=new Comment("Bad comment!","me");
-        assertEquals(controlSystem.AddComment(comment1,post1.getID()),true);
-        assertNotNull(ControlSystem.comments.get(post1.getID()));
-        assertEquals(controlSystem.AddComment(comment1,post1.getID()),false);
-        assertEquals(ControlSystem.comments.get(post1.getID()).contains(comment1),true);
-        assertEquals(controlSystem.AddComment(comment2,post1.getID()),true);
-        assertEquals(ControlSystem.comments.get(post1.getID()).contains(comment2),true);
+        assertNotNull(controlSystem.AddComment(comment1,post1.getID()));
+        assertNotNull(ControlSystem.comments.get(post1.getID()).get("me").get(0));
+        assertNull(controlSystem.AddComment(comment1,post1.getID()));
+        assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment1.getUser()).get(0));
+        assertNotNull(controlSystem.AddComment(comment2,post1.getID()));
+        assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment2.getUser()).get(1));
 
 
     }
@@ -87,12 +87,12 @@ class ControlSystemTest {
 
         controlSystem.AddComment(comment1,post1.getID());
         String c1=post1.getID(),c2=article1.getID();
-        assertEquals(controlSystem.DeleteComment(comment1,c1),true);
-        assertEquals(controlSystem.DeleteComment(comment1,c1),false);
+        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),false);
         controlSystem.AddComment(comment1,c1);
         controlSystem.AddComment(comment1,c2);
-        assertEquals(controlSystem.DeleteComment(comment1,c1),true);
-        assertEquals(controlSystem.DeleteComment(comment1,c2),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId(),c2),true);
 
     }
 

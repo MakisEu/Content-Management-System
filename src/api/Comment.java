@@ -6,9 +6,10 @@ import java.util.ArrayList;
  */
 
 public class Comment {
+    protected static int nextID=0;
     private static int char_limit=250;
     private int likes;
-    private String text,user;
+    private String text,user,id;
     private ArrayList<Comment> replied_comments;
 
     /**
@@ -23,6 +24,8 @@ public class Comment {
         Text=Check_char_count(Text);
         this.text = Text;
         this.user=user;
+        this.id=user+"#"+nextID;
+        nextID++;
     }
 
     /*
@@ -109,6 +112,8 @@ public class Comment {
     public String getUser() {
         return user;
     }
+
+    public String getId() {
+        return id;
+    }
 }
-
-

@@ -7,8 +7,8 @@ import java.util.HashMap;
  * The Main Control Unit class for the CMS
  */
 public class ControlSystem {
-    //String=ContentID
-    protected static HashMap<String, ArrayList<Comment>>comments;
+    //String=ContentID, commentID
+    protected static HashMap<String, HashMap<String,ArrayList<Comment>>> comments;
     //First String=ContentID, Second String=UserId
     protected static HashMap<String, HashMap<String,Integer>>liked;
     //First String=UserId, Second String=Content.Title
@@ -34,19 +34,24 @@ public class ControlSystem {
             return false;
         }
         this.content.get(uid).put(content.getTitle(),content);
-        comments.put(content.getID(),new ArrayList<>());
+        comments.put(content.getID(),new HashMap<>());
         liked.put(content.getID(),new HashMap<>());
         return true;
     }
-    public boolean AddComment(Comment comment,String contentID){
+    public String AddComment(Comment comment,String contentID){
         if (this.comments.get(contentID)==null){
-            this.comments.put(contentID,new ArrayList<>());
+            this.comments.put(contentID,new HashMap<>());
+            this.comments.get(contentID).put(comment.getUser(),new ArrayList<>());
         }
-        if (this.comments.get(contentID).contains(comment)){
-            return false;
+        else if (this.comments.get(contentID).get(comment.getUser())==null){
+            this.comments.get(contentID).put(comment.getUser(),new ArrayList<>());
+
         }
-        this.comments.get(contentID).add(comment);
-        return true;
+        if (this.comments.get(contentID).get(comment.getUser()).contains(comment)){
+            return null;
+        }
+        this.comments.get(contentID).get(comment.getUser()).add(comment);
+        return comment.getId();
     }
     public boolean updateLiked(String user,Content content,int update){
         if (update==0){
@@ -65,10 +70,16 @@ public class ControlSystem {
         }
         return true;
     }
-    public boolean DeleteComment(Comment comment,String contentID){
-        ArrayList<Comment> c=comments.get(contentID);
+    public boolean DeleteComment(String commentID,String contentID){
+
+        ArrayList<Comment> c=comments.get(contentID).get(commentID.split("#")[0]);
         if (c!=null){
-            return c.remove(comment);
+            for (Comment comment: c){
+                if (comment.getId()==commentID){
+                    c.remove(comment);
+                    return true;
+                }
+            }
         }
         return false;
     }
