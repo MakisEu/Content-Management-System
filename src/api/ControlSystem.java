@@ -17,6 +17,9 @@ public class ControlSystem {
     private static HashMap<String,String> all_users;
 
 
+    /**
+     * Base constructor of ControlSystem
+     */
     public ControlSystem(){
         comments=new HashMap<>();
         //liked=new HashMap<>();
@@ -28,6 +31,12 @@ public class ControlSystem {
     public HashMap<String,Boolean> getBanned(){
         return banned;
     }
+
+    /**
+     * Adds a content into the Control System
+     * @param content The content that will be added
+     * @return If the operation happened
+     */
     public boolean AddContent(Content content){
         String uid= content.getUser();
         if (this.content.get(uid)==null){
@@ -41,6 +50,13 @@ public class ControlSystem {
         //liked.put(content.getID(),new HashMap<>());
         return true;
     }
+
+    /**
+     * Adds a comment for a content
+     * @param comment The comment that will be added
+     * @param contentID The content id of the content it wll be added to
+     * @return Control string to inform about what happened
+     */
     public String AddComment(Comment comment,String contentID){
         if (content.get(contentID.split("#")[1]) == null){
             return "this content does not exist anymore.";
@@ -59,23 +75,13 @@ public class ControlSystem {
         this.comments.get(contentID).get(comment.getUser()).add(comment);
         return comment.getId();
     }
-    /*public boolean updateLiked(String user,Content content,int update){
-        if (update==0){
-            return false;
-        }
-        if (this.liked.get(content.getID())==null){
-            return false;
-        }
-        if (this.liked.get(content.getID()).get(user)==null && update!=0){
-            this.liked.get(content.getID()).put(user,update);
-            return true;
-        }
-        int current=this.liked.get(content.getID()).get(user);
-        if ((current==-1 && update==1) || (current==1 && update==-1)){
-            this.liked.get(content.getID()).remove(user);
-        }
-        return true;
-    }*/
+
+    /**
+     * Deletes a comment from a content
+     * @param commentID the id of the comment that will be deleted
+     * @param contentID the id of the content that has the comment
+     * @return if the deletion was successful
+     */
     public boolean DeleteComment(String commentID,String contentID){
 
         if (comments.get(contentID)!=null) {
@@ -91,10 +97,15 @@ public class ControlSystem {
         }
         return false;
     }
+
+    /**
+     * Deletes a content
+     * @param content the content that will be deleted
+     */
     public void DeleteContent(Content content){
         String ContentID= content.getID();
         comments.remove(ContentID);
-        //liked.remove(ContentID);//TODO: Remove from liked(User) as well
+        //liked.remove(ContentID);//
         this.content.get(content.getUser()).remove(content.getID());
     }
 

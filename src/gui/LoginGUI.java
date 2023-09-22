@@ -7,14 +7,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Login extends JDialog {
+public class LoginGUI extends JDialog {
     static ControlSystem cs=new ControlSystem();
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
     private JTextField dTextField;
     private JPasswordField dsPasswordField;
     private JButton button1;
-public Login(JFrame parent) {
+public LoginGUI(JFrame parent) {
     super(parent);
     setTitle("Login");
     setContentPane(panel1);
@@ -44,6 +44,6 @@ public Login(JFrame parent) {
     setVisible(true);
 }
 public static void main(String[] args){
-    Login startScreen=new Login(null);
+    LoginGUI startScreen=new LoginGUI(null);
 }
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * The class for a normal user
+ */
 public class User {
     String userID;
     boolean isAdmin=false;
@@ -11,12 +14,27 @@ public class User {
     HashMap<String,Integer> liked;
     ArrayList<Vector<String>> myComments;
     ControlSystem system;
+
+    /**
+     * Base constructor of User
+     * @param id the unique ID/username of the user
+     * @param system the control system
+     */
     public User(String id,ControlSystem system){
         userID=id;
         this.system=system;
         liked=new HashMap<>();
         myComments=new ArrayList<>();
     }
+
+    /**
+     * Creates and adds a content for the user
+     * @param type      the type of the content
+     * @param Title     the title of the content
+     * @param body      the body of the content
+     * @param extras    the extra fields of the content
+     * @return          Control string tha describes what happened
+     */
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
         switch (type){
@@ -58,6 +76,13 @@ public class User {
             return "Incorrect type. Addition failed.";
         }
     }
+
+    /**
+     * Adds a comment to a content
+     * @param text      The text of the comment
+     * @param contentID The content ID of the content it will be added to
+     * @return          The control string of ControlSystem.AddComment() or that the operation was completed successfully
+     */
     public String AddComment(String text,String contentID){
         Comment comment=new Comment(text,userID);
         String s=system.AddComment(comment,contentID);
@@ -72,6 +97,13 @@ public class User {
             return s;
         }
     }
+
+    /**
+     * Edits a comment of the user
+     * @param commentID The id of the comment that wll be edited
+     * @param text      The text that will replace the original
+     * @return          Control string of what happened
+     */
     public String EditComment(String commentID,String text) {
         Comment comment=this.getComment(commentID);
         if (comment==null){
@@ -83,6 +115,13 @@ public class User {
         }
         return ("You do not have sufficient access right to edit this comment.");
     }
+
+    /**
+     * Deletes a comment of the user
+     * @param commentID the id of the comment that will be deleted
+     * @param contentID the id of the content the comment belongs to
+     * @return          Control string of what happened
+     */
     public String DeleteComment(String commentID,String contentID){
         Comment comment=getComment(commentID);
         if (comment==null){
@@ -94,6 +133,12 @@ public class User {
         }
         return ("You do not have sufficient access right to delete this comment.");
     }
+
+    /**
+     * Deletes a content of the user
+     * @param contentID the id of the content that will be deleted
+     * @return          Control string of what happened
+     */
     public String DeleteContent(String contentID){
         Content content=getContent(contentID);
         if (content!=null && content.getUser().equals(userID) || isAdmin) {
@@ -102,6 +147,15 @@ public class User {
         }
         return ("You do not have sufficient access right to delete this content or it doesn't exist.");
     }
+
+    /**
+     * Edit's a content of the user
+     * @param contentId The id of the content that will be edited
+     * @param title     The new Title of the content.  If it is null, it will not get changed
+     * @param body      The new body of the content.   If it is null, it will not get changed
+     * @param extras    The new extra fields of the content. If an extra field is not in extras, it will not be changed
+     * @return          Control string of what happened
+     */
     public String EditContent(String contentId,String title,Body body,HashMap<String,String> extras){
         Content content=getContent(contentId);
         if (content.getUser().equals(userID)||isAdmin){
@@ -134,6 +188,7 @@ public class User {
     }
 
     /**
+     * Likes a comment
      * @param contentId The id of the content that will be liked/disliked
      */
     public boolean LikeContent(String contentId,boolean isLiked){
@@ -159,7 +214,6 @@ public class User {
                 else if (contain==-1 && isLiked) {
                     content.Like();
                     liked.remove(contentId);
-
                 }
                 else{
                     return false;
@@ -180,6 +234,11 @@ public class User {
         return false;
     }
 
+    /**
+     * returns a comment
+     * @param commentID the id of the comment that will be returned
+     * @return          the comment
+     */
     public Comment getComment(String commentID){
         Comment c=null;
         for (Vector<String> v:myComments){
@@ -202,6 +261,12 @@ public class User {
         }
         return c;
     }
+
+    /**
+     * Returns a content
+     * @param contentID The id of the content that will be returned
+     * @return          The content
+     */
     public Content getContent(String contentID){
         return ControlSystem.content.get(userID).get(contentID);
     }

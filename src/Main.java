@@ -1,8 +1,8 @@
-import gui.Login;
+import gui.LoginGUI;
 
 public class Main {
 
     public static void main(String[] args) {
-        Login startScreen=new Login(null);
+        LoginGUI login=new LoginGUI(null);
     }
 }

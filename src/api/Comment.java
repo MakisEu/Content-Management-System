@@ -106,6 +106,9 @@ public class Comment {
         return user;
     }
 
+    /**
+     * @return The unique ID of the Comment
+     */
     public String getId() {
         return id;
     }
