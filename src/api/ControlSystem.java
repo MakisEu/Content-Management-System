@@ -14,12 +14,15 @@ public class ControlSystem {
     //First String=UserId, Second String=Content.Title
     protected static HashMap<String,HashMap<String,Content>> content;
     protected static HashMap<String,Boolean> banned;
+    private static HashMap<String,String> all_users;
+
 
     public ControlSystem(){
         comments=new HashMap<>();
         liked=new HashMap<>();
         content=new HashMap<>();
         banned=new HashMap<>();
+        all_users=new HashMap<>();
     }
 
     public HashMap<String,Boolean> getBanned(){
@@ -88,5 +91,9 @@ public class ControlSystem {
         comments.remove(ContentID);
         liked.remove(ContentID);//TODO: Remove from liked(User) as well
         this.content.get(content.getUser()).remove(content.getTitle());
+    }
+
+    public HashMap<String,String> getAll_users(){
+        return all_users;
     }
 }
