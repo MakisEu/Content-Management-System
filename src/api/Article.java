@@ -25,6 +25,7 @@ public class Article extends Post{
         Body=new BodyArticle(Text);
         this.ID=this.ID.replace("Post","Article");
         this.author=Author;
+        replied_comments=new ArrayList<>();
     }
 
     /**
@@ -55,5 +56,9 @@ public class Article extends Post{
      */
     public String getAuthor() {
         return author;
+    }
+
+    public ArrayList<Comment> getReplied_comments(){
+        return replied_comments;
     }
 }

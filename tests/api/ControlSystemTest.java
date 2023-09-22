@@ -21,6 +21,7 @@ class ControlSystemTest {
         ControlSystem.content=null;
         //ControlSystem.liked=null;
     }
+
     @Test
     void addContent() {
         ControlSystem controlSystem=new ControlSystem();
@@ -117,6 +118,16 @@ class ControlSystemTest {
 
     @Test
     void getBanned() {
+        ControlSystem controlSystem=new ControlSystem();
+        controlSystem.getBanned().put("Jim",true);
+        controlSystem.getBanned().put("Makis",true);
+        controlSystem.getBanned().put("Nick",true);
+        assertEquals(controlSystem.getBanned().containsKey("Jim"),true);
+        assertEquals(controlSystem.getBanned().containsKey("Makis"),true);
+        assertEquals(controlSystem.getBanned().containsKey("Nick"),true);
+        assertEquals(controlSystem.getBanned().get("Jim"),true);
+        assertEquals(controlSystem.getBanned().get("Makis"),true);
+        assertEquals(controlSystem.getBanned().get("Nick"),true);
     }
 
 }
