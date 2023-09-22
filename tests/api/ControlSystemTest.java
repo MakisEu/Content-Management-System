@@ -48,9 +48,10 @@ class ControlSystemTest {
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
         Comment comment1=new Comment("Nice comment!","me");
         Comment comment2=new Comment("Bad comment!","me");
-        assertNotNull(controlSystem.AddComment(comment1,post1.getID()));
+        controlSystem.AddContent(post1);
+        assertEquals(controlSystem.AddComment(comment1,post1.getID()).contains("#"),true);
         assertNotNull(ControlSystem.comments.get(post1.getID()).get("me").get(0));
-        assertNull(controlSystem.AddComment(comment1,post1.getID()));
+        assertEquals(controlSystem.AddComment(comment1,post1.getID()),"This comment already exist.");
         assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment1.getUser()).get(0));
         assertNotNull(controlSystem.AddComment(comment2,post1.getID()));
         assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment2.getUser()).get(1));
@@ -84,6 +85,8 @@ class ControlSystemTest {
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
         Comment comment1=new Comment("Nice comment!","me");
         Comment comment2=new Comment("Bad comment!","me");
+        controlSystem.AddContent(post1);
+        controlSystem.AddContent(article1);
 
         controlSystem.AddComment(comment1,post1.getID());
         String c1=post1.getID(),c2=article1.getID();
@@ -103,15 +106,15 @@ class ControlSystemTest {
         Article article1=new Article("Totally legit author","No title","A text","me");
         Post post2=new Post("title","LaText","you");
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
-
-
         controlSystem.AddContent(post1);
         controlSystem.AddContent(post2);
         controlSystem.AddContent(article1);
         controlSystem.AddContent(article2);
-        assertNotNull(ControlSystem.content.get(post1.getUser()).get(post1.getTitle()));
+
+        assertNotNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
         controlSystem.DeleteContent(post1);
-        assertNull(ControlSystem.content.get(post1.getUser()).get(post1.getTitle()));
+        assertNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
+        assertNull(ControlSystem.comments.get(post1.getID()));
     }
 
     @Test

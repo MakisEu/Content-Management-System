@@ -11,7 +11,7 @@ public class ControlSystem {
     protected static HashMap<String, HashMap<String,ArrayList<Comment>>> comments;
     //First String=ContentID, Second String=UserId
     protected static HashMap<String, HashMap<String,Integer>>liked;
-    //First String=UserId, Second String=Content.Title
+    //First String=UserId, Second String=ContentId
     protected static HashMap<String,HashMap<String,Content>> content;
     protected static HashMap<String,Boolean> banned;
 
@@ -30,15 +30,18 @@ public class ControlSystem {
         if (this.content.get(uid)==null){
             this.content.put(uid,new HashMap<>());
         }
-        if (!(this.content.get(uid).get(content.getTitle())==null)){
+        if (!(this.content.get(uid).get(content.getID())==null)){
             return false;
         }
-        this.content.get(uid).put(content.getTitle(),content);
+        this.content.get(uid).put(content.getID(),content);
         comments.put(content.getID(),new HashMap<>());
         liked.put(content.getID(),new HashMap<>());
         return true;
     }
     public String AddComment(Comment comment,String contentID){
+        if (content.get(contentID.split("#")[1]) == null){
+            return "this content does not exist anymore.";
+        }
         if (this.comments.get(contentID)==null){
             this.comments.put(contentID,new HashMap<>());
             this.comments.get(contentID).put(comment.getUser(),new ArrayList<>());
@@ -48,7 +51,7 @@ public class ControlSystem {
 
         }
         if (this.comments.get(contentID).get(comment.getUser()).contains(comment)){
-            return null;
+            return "This comment already exist.";
         }
         this.comments.get(contentID).get(comment.getUser()).add(comment);
         return comment.getId();
@@ -72,12 +75,14 @@ public class ControlSystem {
     }
     public boolean DeleteComment(String commentID,String contentID){
 
-        ArrayList<Comment> c=comments.get(contentID).get(commentID.split("#")[0]);
-        if (c!=null){
-            for (Comment comment: c){
-                if (comment.getId()==commentID){
-                    c.remove(comment);
-                    return true;
+        if (comments.get(contentID)!=null) {
+            ArrayList<Comment> c = comments.get(contentID).get(commentID.split("#")[0]);
+            if (c != null) {
+                for (Comment comment : c) {
+                    if (comment.getId() == commentID) {
+                        c.remove(comment);
+                        return true;
+                    }
                 }
             }
         }
@@ -87,6 +92,6 @@ public class ControlSystem {
         String ContentID= content.getID();
         comments.remove(ContentID);
         liked.remove(ContentID);//TODO: Remove from liked(User) as well
-        this.content.get(content.getUser()).remove(content.getTitle());
+        this.content.get(content.getUser()).remove(content.getID());
     }
 }

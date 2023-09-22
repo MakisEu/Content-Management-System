@@ -22,6 +22,7 @@ public class Article extends Post{
 
     public Article(String Author,String Title,String Text,String user){
         super(Title,Text,user,char_limit_Article);
+        Body=new BodyArticle(Text);
         this.ID=this.ID.replace("Post","Article");
         this.author=Author;
     }

@@ -51,7 +51,7 @@ public class User {
             if (system.AddContent(b)){
                 return "Added successfully.";
             }
-            return "You already have content with the same title.";
+            return "This content already exists.";
         }
         else{
             return "Incorrect type. Addition failed.";
@@ -60,7 +60,7 @@ public class User {
     public String AddComment(String text,String contentID){
         Comment comment=new Comment(text,userID);
         String s=system.AddComment(comment,contentID);
-        if (s!=null){
+        if (s.contains("#")){
             Vector v=new Vector<>();
             v.add(contentID);
             v.add(s);
@@ -68,7 +68,7 @@ public class User {
             return "Added successfully.";
         }
         else{
-            return "This comment already exist.";
+            return s;
         }
     }
     public String EditComment(String commentID,String text) {
@@ -93,14 +93,16 @@ public class User {
         }
         return ("You do not have sufficient access right to delete this comment.");
     }
-    public String DeleteContent(Content content){
-        if (content.getUser().equals(userID) || isAdmin) {
+    public String DeleteContent(String contentID){
+        Content content=getContent(contentID);
+        if (content!=null && content.getUser().equals(userID) || isAdmin) {
             system.DeleteContent(content);
             return ("Content has been deleted.");
         }
-        return ("You do not have sufficient access right to delete this content.");
+        return ("You do not have sufficient access right to delete this content or it doesn't exist.");
     }
-    public String EditContent(Content content,String title,Body body,HashMap<String,String> extras){
+    public String EditContent(String contentId,String title,Body body,HashMap<String,String> extras){
+        Content content=getContent(contentId);
         if (content.getUser().equals(userID)||isAdmin){
             if(title!=null){
                 content.setTitle(title);
@@ -109,9 +111,15 @@ public class User {
             if (extras.isEmpty()){return ("Content has been edited.");}
             switch (type){
                 case ("Post"):{
+                    if (body!=null) {
+                        ((BodyPost)content.getBody()).setText(((BodyPost)body).getText());
+                    }
                     return ("Content has been edited.");
                 }
                 case ("Article"):{
+                    if (body!=null) {
+                        ((BodyArticle)content.getBody()).setText(((BodyArticle)body).getText());
+                    }
                     for (String s: extras.keySet()) {
                         if (s.equals("Author")){
                             ((Article) content).setAuthor(extras.get(s));
@@ -139,17 +147,25 @@ public class User {
         Comment c=null;
         for (Vector<String> v:myComments){
             if (v.get(1)==commentID) {
-                ArrayList<Comment> coms = ControlSystem.comments.get(v.get(0)).get(v.get(1).split("#")[0]);
-                if (coms != null) {
-                    for (Comment com : coms) {
-                        if (com.getId() == commentID) {
-                            return com;
+                if (ControlSystem.comments.get(v.get(0))!=null) {
+                    ArrayList<Comment> coms = ControlSystem.comments.get(v.get(0)).get(v.get(1).split("#")[0]);
+                    if (coms != null) {
+                        for (Comment com : coms) {
+                            if (com.getId() == commentID) {
+                                return com;
+                            }
                         }
+                        return c;
                     }
-                    return c;
+                }
+                else {
+                    myComments.remove(v);
                 }
             }
         }
         return c;
+    }
+    public Content getContent(String contentID){
+        return ControlSystem.content.get(userID).get(contentID);
     }
 }
