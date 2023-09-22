@@ -11,6 +11,7 @@ class ControlSystemTest {
     @BeforeEach
     void setUp() {
         Content.nextID=0;
+        Comment.nextID=0;
 
     }
 

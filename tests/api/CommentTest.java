@@ -6,6 +6,7 @@ class CommentTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
+
     }
 
     @org.junit.jupiter.api.AfterEach
