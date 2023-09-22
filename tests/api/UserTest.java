@@ -20,7 +20,7 @@ class UserTest {
     void tearDown() {
         ControlSystem.comments=null;
         ControlSystem.content=null;
-        ControlSystem.liked=null;
+        //ControlSystem.liked=null;
     }
 
     @Test
@@ -68,7 +68,6 @@ class UserTest {
         assertNotNull(ControlSystem.comments.get(ControlSystem.content.get("Makis").get("Article#Makis#0").getID()).get(user1.myComments.get(0).get(1).split("#")[0]));
         assertEquals(user1.DeleteComment(user1.myComments.get(0).get(1),ControlSystem.content.get("Makis").get("Article#Makis#0").getID()),"Comment has been deleted.");
 
-
     }
 
     @Test
@@ -100,11 +99,41 @@ class UserTest {
 
     }
 
+
     @Test
-    void like() {
+    void likeContent() {
+        ControlSystem controlSystem=new ControlSystem();
+        User user1=new User("Makis",controlSystem);
+        user1.AddContent("Article","My title",new BodyArticle("Ignore this text"),null);
+        Content content=user1.getContent("Article#Makis#0");
+        assertEquals(user1.LikeContent(content.getID(),true),true);
+        assertEquals(content.getVotes(),1);
+        assertEquals(user1.LikeContent(content.getID(),false),true);
+        assertEquals(content.getVotes(),0);
+        assertEquals(user1.LikeContent(content.getID(),false),true);
+        assertEquals(content.getVotes(),-1);
+        assertEquals(user1.LikeContent(content.getID(),true),true);
+        assertNull(user1.liked.get(user1.getContent(content.getID())));
+
     }
 
     @Test
-    void dislike() {
+    void getComment() {
+        ControlSystem controlSystem=new ControlSystem();
+        User user1=new User("Makis",controlSystem);
+        user1.AddContent("Article","My title",new BodyArticle("Ignore this text"),null);
+        user1.AddComment("My comment",ControlSystem.content.get("Makis").get("Article#Makis#0").getID());
+
+        assertNotNull(user1.getComment("Makis#0"));
+    }
+
+    @Test
+    void getContent() {
+        ControlSystem controlSystem=new ControlSystem();
+        User user1=new User("Makis",controlSystem);
+        user1.AddContent("Article","My title",new BodyArticle("Ignore this text"),null);
+        user1.AddComment("My comment",ControlSystem.content.get("Makis").get("Article#Makis#0").getID());
+
+        assertNotNull(user1.getContent("Article#Makis#0"));
     }
 }

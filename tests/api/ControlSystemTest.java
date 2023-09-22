@@ -18,7 +18,7 @@ class ControlSystemTest {
     void tearDown() {
         ControlSystem.comments=null;
         ControlSystem.content=null;
-        ControlSystem.liked=null;
+        //ControlSystem.liked=null;
     }
     @Test
     void addContent() {
@@ -55,11 +55,8 @@ class ControlSystemTest {
         assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment1.getUser()).get(0));
         assertNotNull(controlSystem.AddComment(comment2,post1.getID()));
         assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment2.getUser()).get(1));
-
-
     }
-
-    @Test
+    /*@Test
     void updateLiked() {
         ControlSystem controlSystem=new ControlSystem();
         Post post1=new Post("This is a post that has no title","The post contains nothing","Noone");
@@ -74,7 +71,7 @@ class ControlSystemTest {
         assertNotNull(ControlSystem.liked.get(post1.getID()).get("Makis"));
         assertEquals(controlSystem.updateLiked("Makis",post1,-1),true);
         assertNull(ControlSystem.liked.get(post1.getID()).get("Makis"));
-    }
+    }*/
 
     @Test
     void deleteComment() {

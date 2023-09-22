@@ -7,13 +7,14 @@ import java.util.Vector;
 public class User {
     String userID;
     boolean isAdmin=false;
-    ArrayList<String> liked;
+    //contend id, liked/disliked
+    HashMap<String,Integer> liked;
     ArrayList<Vector<String>> myComments;
     ControlSystem system;
     public User(String id,ControlSystem system){
         userID=id;
         this.system=system;
-        liked=new ArrayList<>();
+        liked=new HashMap<>();
         myComments=new ArrayList<>();
     }
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
@@ -133,25 +134,61 @@ public class User {
     }
 
     /**
-     * @param content The content that will be liked
+     * @param contentId The id of the content that will be liked/disliked
      */
-    public void LikeContent(Content content){
+    public boolean LikeContent(String contentId,boolean isLiked){
+        Integer contain=liked.get(contentId);
+        if (ControlSystem.content.get(contentId.split("#")[1]) !=null){
+            Content content=ControlSystem.content.get(contentId.split("#")[1]).get(contentId);
+            if (content!=null){
+                if (contain==null) {
+                    if (isLiked){
+                        liked.put(contentId,1);
+                        content.Like();
+                    }
+                    else{
+                        liked.put(contentId,-1);
+                        content.Dislike();
+                    }
+                }
+                else if (contain==1 && !isLiked){
+                    content.Dislike();
+                    liked.remove(contentId);
+
+                }
+                else if (contain==-1 && isLiked) {
+                    content.Like();
+                    liked.remove(contentId);
+
+                }
+                else{
+                    return false;
+                }
+                return true;
+            }
+            else{
+                if (contain!=null){
+                    liked.remove(contentId);
+                }
+            }
+        }
+        else{
+            if (contain!=null){
+                liked.remove(contentId);
+            }
+        }
+        return false;
     }
 
-    /**
-     * @param content The content that will be disliked
-     */
-    public void DislikeContent(Content content){
-    }
     public Comment getComment(String commentID){
         Comment c=null;
         for (Vector<String> v:myComments){
-            if (v.get(1)==commentID) {
+            if (v.get(1).equals(commentID)) {
                 if (ControlSystem.comments.get(v.get(0))!=null) {
                     ArrayList<Comment> coms = ControlSystem.comments.get(v.get(0)).get(v.get(1).split("#")[0]);
                     if (coms != null) {
                         for (Comment com : coms) {
-                            if (com.getId() == commentID) {
+                            if (com.getId().equals(commentID)) {
                                 return com;
                             }
                         }

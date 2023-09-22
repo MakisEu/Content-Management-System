@@ -10,7 +10,7 @@ public class ControlSystem {
     //String=ContentID, commentID
     protected static HashMap<String, HashMap<String,ArrayList<Comment>>> comments;
     //First String=ContentID, Second String=UserId
-    protected static HashMap<String, HashMap<String,Integer>>liked;
+    //protected static HashMap<String, HashMap<String,Integer>>liked;
     //First String=UserId, Second String=ContentId
     protected static HashMap<String,HashMap<String,Content>> content;
     protected static HashMap<String,Boolean> banned;
@@ -19,7 +19,7 @@ public class ControlSystem {
 
     public ControlSystem(){
         comments=new HashMap<>();
-        liked=new HashMap<>();
+        //liked=new HashMap<>();
         content=new HashMap<>();
         banned=new HashMap<>();
         all_users=new HashMap<>();
@@ -38,7 +38,7 @@ public class ControlSystem {
         }
         this.content.get(uid).put(content.getID(),content);
         comments.put(content.getID(),new HashMap<>());
-        liked.put(content.getID(),new HashMap<>());
+        //liked.put(content.getID(),new HashMap<>());
         return true;
     }
     public String AddComment(Comment comment,String contentID){
@@ -59,7 +59,7 @@ public class ControlSystem {
         this.comments.get(contentID).get(comment.getUser()).add(comment);
         return comment.getId();
     }
-    public boolean updateLiked(String user,Content content,int update){
+    /*public boolean updateLiked(String user,Content content,int update){
         if (update==0){
             return false;
         }
@@ -75,7 +75,7 @@ public class ControlSystem {
             this.liked.get(content.getID()).remove(user);
         }
         return true;
-    }
+    }*/
     public boolean DeleteComment(String commentID,String contentID){
 
         if (comments.get(contentID)!=null) {
@@ -94,7 +94,7 @@ public class ControlSystem {
     public void DeleteContent(Content content){
         String ContentID= content.getID();
         comments.remove(ContentID);
-        liked.remove(ContentID);//TODO: Remove from liked(User) as well
+        //liked.remove(ContentID);//TODO: Remove from liked(User) as well
         this.content.get(content.getUser()).remove(content.getID());
     }
 
