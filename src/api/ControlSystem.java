@@ -7,7 +7,7 @@ import java.util.HashMap;
  * The Main Control Unit class for the CMS
  */
 public class ControlSystem {
-    //String=ContentID, commentID
+    //String=ContentID, comment.user()
     protected static HashMap<String, HashMap<String,ArrayList<Comment>>> comments;
     //First String=ContentID, Second String=UserId
     //protected static HashMap<String, HashMap<String,Integer>>liked;
