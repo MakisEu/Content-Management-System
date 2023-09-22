@@ -28,27 +28,16 @@ public class Comment {
         nextID++;
     }
 
-    /*
 
     public void AddLike(){
-        if (user.likedThisComment(this)==False){   //Supposed there is a method checking if a user has liked a specific comment
-            likes++;
-           }
-        else{
-            System.out.println("You already liked!");
-        }
+        likes++;
     }
 
     public void RemoveLike(User user){      //Supposed a class User exists
-        if (user.likedThisComment(this)==True){   //Supposed there is a method checking if a user has liked a specific comment
-            likes--;
-        }
-        else{
-            System.out.println("You can not unlike!");
-        }
+        likes--;
     }
 
-    */
+
     /**
      *
      * @param Text the text of the replied comment
@@ -84,6 +73,10 @@ public class Comment {
 
     public int getReplies(){
         return replied_comments.size();
+    }
+
+    public ArrayList<Comment> getReplied_comments(){
+        return replied_comments;
     }
 
     /**
