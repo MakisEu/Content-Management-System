@@ -1,43 +1,51 @@
 package api;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommentTest {
 
-    @org.junit.jupiter.api.BeforeEach
+    @BeforeEach
     void setUp() {
-
     }
 
-    @org.junit.jupiter.api.AfterEach
+    @AfterEach
     void tearDown() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void reply() {
+
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void edit() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getLikes() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getReplies() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getText() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void check_char_count() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getUser() {
+    }
+
+    @Test
+    void getId() {
     }
 }
