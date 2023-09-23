@@ -9,18 +9,18 @@ import java.awt.event.ActionListener;
 
 public class LoginGUI extends JDialog {
     static ControlSystem cs=new ControlSystem();
-    private JTabbedPane tabbedPane1;
     private JPanel panel1;
     private JTextField dTextField;
     private JPasswordField dsPasswordField;
     private JButton button1;
 public LoginGUI(JFrame parent) {
-    super(parent);
-    setTitle("Login");
-    setContentPane(panel1);
+    super();
+    this.setTitle("Content Management System");
+    this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
     setMinimumSize(new Dimension(275,600));
-    setModal(true);
     setLocationRelativeTo(parent);
+
     button1.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -41,8 +41,11 @@ public LoginGUI(JFrame parent) {
             }
         }
     });
-    setVisible(true);
+    setVisible(false);
 }
+    public JPanel getJpanel(){
+        return panel1;
+    }
 public static void main(String[] args){
     LoginGUI startScreen=new LoginGUI(null);
 }
