@@ -2,6 +2,7 @@ package api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * The Main Control Unit class for the CMS
@@ -14,7 +15,8 @@ public class ControlSystem {
     //First String=UserId, Second String=ContentId
     protected static HashMap<String,HashMap<String,Content>> content;
     protected static HashMap<String,Boolean> banned;
-    private static HashMap<String,String> all_users;
+    //username, (password,type)
+    private static HashMap<String, Vector<String>> all_users;
 
 
     /**
@@ -109,7 +111,7 @@ public class ControlSystem {
         this.content.get(content.getUser()).remove(content.getID());
     }
 
-    public HashMap<String,String> getAll_users(){
+    public HashMap<String,Vector<String>> getAll_users(){
         return all_users;
     }
 }

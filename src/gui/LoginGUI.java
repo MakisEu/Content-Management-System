@@ -13,8 +13,10 @@ public class LoginGUI extends JDialog {
     private JTextField dTextField;
     private JPasswordField dsPasswordField;
     private JButton button1;
+    private JFrame frame;
 public LoginGUI(JFrame parent) {
     super();
+    frame=parent;
     this.setTitle("Content Management System");
     this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -32,11 +34,16 @@ public LoginGUI(JFrame parent) {
             }
             else {
                 String s = login.Log_in(Username, Password);
+                String type=s.split("#")[1];
+                s=s.split("#")[0];
                 if (s.equals("Wrong username or password!")) {
                     JOptionPane.showMessageDialog(panel1, s, "Mismatched Username/Password", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     JOptionPane.showMessageDialog(panel1, s, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                    new UserGUI(Username);
+                    frame.dispose();
+
                 }
             }
         }

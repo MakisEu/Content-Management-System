@@ -15,6 +15,7 @@ public class StartScreen extends JFrame{
         this.setMinimumSize(new Dimension(275,600));
         setLocationRelativeTo(null);
         tabbedPane1.add("Log in",new LoginGUI(this).getJpanel());
+        tabbedPane1.add("Sign up",new Register().getJpanel());
         this.add(tabbedPane1);
         this.setVisible(true);
     }
