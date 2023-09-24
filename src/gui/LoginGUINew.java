@@ -1,6 +1,7 @@
 package gui;
 
 import api.ControlSystem;
+import api.Login;
 import org.w3c.dom.css.RGBColor;
 
 import javax.swing.*;
@@ -15,8 +16,10 @@ public class LoginGUINew extends JPanel implements ActionListener {
     JButton loginButton;
     JTextField uname;
     JPasswordField pwd;
-    public LoginGUINew(JFrame frame) {
+    Login login;
+    public LoginGUINew(JFrame frame,Login login1) {
         this.frame=frame;
+        this.login=login1;
         this.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(30,30,30,30);
@@ -72,7 +75,6 @@ public class LoginGUINew extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("Login")) {
             String Username = uname.getText();
             String Password = pwd.getText();
-            api.Login login = new api.Login(new ControlSystem());
             if (Username.equals("") || Password.equals("")) {
                 JOptionPane.showMessageDialog(this, "Please fill all fields", "Not all fields are filled", JOptionPane.ERROR_MESSAGE);
             } else {

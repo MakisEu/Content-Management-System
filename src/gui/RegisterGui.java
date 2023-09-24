@@ -1,5 +1,8 @@
 package gui;
 
+import api.ControlSystem;
+import api.Login;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,8 +16,10 @@ JPasswordField pwd;
 JTextField uname;
 JRadioButton user,admin;
 JPanel radiobuttons;
-public  RegisterGui(JFrame frame1) {
+Login login;
+public  RegisterGui(JFrame frame1,Login login1) {
     frame=frame1;
+    login=login1;
     this.setLayout(new GridBagLayout());
     GridBagConstraints constraints = new GridBagConstraints();
     constraints.insets = new Insets(30,30,30,30);
@@ -99,6 +104,31 @@ public  RegisterGui(JFrame frame1) {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+    if (e.getActionCommand().equals("Sign Up")){
+        String Username=uname.getText();
+        String Password=pwd.getText();
+
+        if (Username.equals("") || Password.equals("")){
+            JOptionPane.showMessageDialog(null, "Please fill all fields", "Not all fields are filled", JOptionPane.ERROR_MESSAGE);
+        }
+        else {
+            String type=null;
+            if (user.isEnabled()) {
+                type="User";
+            }
+            else {
+                type="Admin";
+            }
+            String s = login.Sign_up(Username, Password,type);
+            s = s.split("#")[0];
+            if (s.equals("This username is already taken")) {
+                JOptionPane.showMessageDialog(null, "This username is already exists!", "Change Username!", JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Account has been created successfully!", "Registration successful!", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
 
     }
 }
