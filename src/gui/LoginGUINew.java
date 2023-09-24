@@ -55,7 +55,7 @@ public class LoginGUINew extends JPanel implements ActionListener {
         this.add(pwd,constraints);
         constraints.gridy++;
         ImageIcon ii = new ImageIcon("assets/login_button.png");
-        loginButton=new JButton(imageIcon);
+        loginButton=new JButton(ii);
         Image img = ii.getImage().getScaledInstance(-1, 120, Image. SCALE_SMOOTH);
         ImageIcon rI = new ImageIcon(img);
         loginButton.setIcon(rI);
@@ -86,7 +86,7 @@ public class LoginGUINew extends JPanel implements ActionListener {
                     s = s.split("#")[0];
                     JOptionPane.showMessageDialog(this, s, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     if (type.equals("User")) {
-                        new UserGUI(Username, null);
+                        new UserGUINew(Username);
                         frame.dispose();
                     }
                 }

@@ -48,6 +48,7 @@ public class User {
                 else {
                     return ("Max Limit of the Post's Text Exceeded by"+String.valueOf(bp.getText().length()-Post.charLimitPost)+"Characters.");
                 }
+                break;
             }
             case ("Article"):{
                 //Create Article
@@ -63,6 +64,8 @@ public class User {
                 else {
                     return ("Max Limit of the Post's Text Exceeded by"+String.valueOf(ba.getText().length()-Post.charLimitPost)+"Characters.");
                 }
+                break;
+
 
             }
         }
