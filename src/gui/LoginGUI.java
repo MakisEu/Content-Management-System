@@ -41,8 +41,9 @@ public LoginGUI(JFrame parent) {
                 }
                 else {
                     JOptionPane.showMessageDialog(panel1, s, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-                    new UserGUI(Username);
                     frame.dispose();
+                    new UserGUI(Username,frame);
+
 
                 }
             }
