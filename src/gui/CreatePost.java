@@ -25,9 +25,10 @@ public class CreatePost extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(30,30,30,30);
-        this.setBackground(new Color(255,255,255));
+        this.getContentPane().setBackground(new Color(255,255,255));
+        this.getContentPane().setForeground(new Color(0,0,0));
 
-        constraints.insets=new Insets(30,15,15,15);
+        constraints.insets=new Insets(15,15,15,15);
         constraints.gridy=1;
 
 

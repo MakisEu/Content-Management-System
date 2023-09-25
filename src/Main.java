@@ -1,8 +1,9 @@
-import gui.LoginGUI;
+import gui.StartScreenNew;
 
 public class Main {
 
     public static void main(String[] args) {
-        LoginGUI login=new LoginGUI(null);
+
+        StartScreenNew ss=new StartScreenNew();
     }
 }

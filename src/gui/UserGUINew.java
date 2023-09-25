@@ -19,11 +19,12 @@ public class UserGUINew extends JFrame {
         this.setForeground(new Color(0,0,0));
 
         tabs=new JTabbedPane();
+        tabs.add("Search",new Search(this,user));
         tabs.add("Upload",new UploadContent(this,user));
 
         this.add(tabs);
         this.setPreferredSize(new Dimension(1000,1000));
-        this.setMinimumSize(new Dimension(400,400));
+        this.setMinimumSize(new Dimension(400,560));
         setLocationRelativeTo(null);
         this.setVisible(true);
 
