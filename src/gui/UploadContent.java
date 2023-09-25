@@ -55,7 +55,7 @@ public class UploadContent extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Post")){
-            new CreatePost(user);
+            new   CreatePost(user);
             
         } else if (e.getActionCommand().equals("Article")) {
             new  CreateArticle(user);
