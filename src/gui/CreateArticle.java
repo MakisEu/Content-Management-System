@@ -1,6 +1,6 @@
 package gui;
 
-import api.BodyPost;
+import api.BodyArticle;
 import api.ControlSystem;
 import api.User;
 
@@ -8,20 +8,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
-public class CreatePost extends JFrame implements ActionListener {
+public class CreateArticle extends JFrame implements ActionListener {
 
     User user;
     JButton upload;
-    JTextField titlePost,textPost;
-    JLabel titleLabel,textLabel,formNotification;
+    JTextField titleArticle,textArticle,authorArticle;
+    JLabel titleLabel,textLabel,formNotification,authorLabel;
 
-    public CreatePost(User user){
+    public CreateArticle(User user){
         super();
         this.user=user;
-        this.setTitle("Create Post");
+        this.setTitle("Create Article");
         this.setLayout(new GridBagLayout());
-        this.setMinimumSize(new Dimension(400,475));
+        this.setMinimumSize(new Dimension(400,575));
         this.setLocationRelativeTo(null);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(30,30,30,30);
@@ -31,32 +32,46 @@ public class CreatePost extends JFrame implements ActionListener {
         constraints.gridy=1;
 
 
-        formNotification=new JLabel("Create a post.");
+        formNotification=new JLabel("Create an Article.");
         formNotification.setFont(new Font("Source Code Pro", Font.BOLD, 24));
         this.add(formNotification,constraints);
         constraints.insets=new Insets(15,15,15,15);
         constraints.gridy++;
-        titleLabel=new JLabel("Title of the post");
+        titleLabel=new JLabel("Title of the Article");
         titleLabel.setFont(new Font("Source Code Pro", Font.PLAIN, 18));
         this.add(titleLabel,constraints);
         constraints.gridx++;
         constraints.gridy++;
-        titlePost=new JTextField(12);
-        titlePost.setBackground(new Color(164,244,199));
-        titlePost.setForeground(new Color(0,0,0));
-        this.add(titlePost,constraints);
+        titleArticle=new JTextField(12);
+        titleArticle.setBackground(new Color(164,244,199));
+        titleArticle.setForeground(new Color(0,0,0));
+        this.add(titleArticle,constraints);
         constraints.gridx--;
         constraints.gridy++;
-        textLabel=new JLabel("The text of the post");
+        textLabel=new JLabel("The text of the Article");
         textLabel.setFont(new Font("Source Code Pro", Font.PLAIN, 18));
         this.add(textLabel,constraints);
         constraints.gridx++;
         constraints.gridy++;
 
-        textPost=new JTextField(12);
-        textPost.setBackground(new Color(164,244,199));
-        textPost.setForeground(new Color(0,0,0));
-        this.add(textPost,constraints);
+        textArticle=new JTextField(12);
+        textArticle.setBackground(new Color(164,244,199));
+        textArticle.setForeground(new Color(0,0,0));
+        this.add(textArticle,constraints);
+        //constraints.gridx--;
+        constraints.gridy++;
+        authorLabel=new JLabel("The author of the Article");
+        authorLabel.setFont(new Font("Source Code Pro", Font.PLAIN, 18));
+        this.add(authorLabel,constraints);
+        //constraints.gridx++;
+        constraints.gridy++;
+
+        authorArticle=new JTextField(12);
+        authorArticle.setBackground(new Color(164,244,199));
+        authorArticle.setForeground(new Color(0,0,0));
+        this.add(authorArticle,constraints);
+
+
         constraints.gridy++;
         constraints.gridx--;
         ImageIcon ii = new ImageIcon("assets/upload_button.png");
@@ -79,15 +94,21 @@ public class CreatePost extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Upload")){
-            String title=titlePost.getText();
-            String text=textPost.getText();
+            String title=titleArticle.getText();
+            String text=textArticle.getText();
+            String author=authorArticle.getText();
             if (title.equals("") || text.equals("")){
                 JOptionPane.showMessageDialog(this, "Please fill all fields", "Not all fields are filled", JOptionPane.ERROR_MESSAGE);
             }
             else{
-                String s=user.AddContent("Post",title,new BodyPost(text),null);
+                HashMap<String,String> extras=null;
+                if (!author.equals("")){
+                    extras=new HashMap<>();
+                    extras.put("Author",author);
+                }
+                String s=user.AddContent("Article",title,new BodyArticle(text),extras);
                 if (s.equals("Added successfully.")){
-                    JOptionPane.showMessageDialog(this, "Post has been created successfully.", "Congratulations!.", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Article has been created successfully.", "Congratulations!.", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else{
                     JOptionPane.showMessageDialog(this, s, "An error has occurred!", JOptionPane.ERROR_MESSAGE);
@@ -97,6 +118,6 @@ public class CreatePost extends JFrame implements ActionListener {
 
     }
     public static void main(String[] args){
-        new CreatePost(new User("mew",new ControlSystem()));
+        new CreateArticle(new User("mew",new ControlSystem()));
     }
 }

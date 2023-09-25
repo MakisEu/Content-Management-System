@@ -37,6 +37,15 @@ public class User {
      */
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
+        if (system.content.get(userID)!=null) {
+            for (String key : system.content.get(userID).keySet()) {
+                if (system.content.get(userID).get(key) != null) {
+                    if (system.content.get(userID).get(key).getTitle().equals(Title)) {
+                        return "You already have content with the same title!";
+                    }
+                }
+            }
+        }
         switch (type){
             case ("Post"):{
                 //Create Post
@@ -57,7 +66,7 @@ public class User {
                 if (extras!=null && extras.get("Author")!=null){
                     author=extras.get("Author");
                 }
-                if (ba.getText().length()<Post.charLimitPost) {
+                if (ba.getText().length()<Article.charLimitPost) {
                     Article p = new Article(author,Title, ba.getText(), userID);
                     b=p;
                 }

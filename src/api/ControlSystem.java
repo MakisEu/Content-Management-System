@@ -28,6 +28,7 @@ public class ControlSystem {
         content=new HashMap<>();
         banned=new HashMap<>();
         all_users=new HashMap<>();
+
     }
 
     public HashMap<String,Boolean> getBanned(){

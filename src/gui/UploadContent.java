@@ -58,7 +58,7 @@ public class UploadContent extends JPanel implements ActionListener {
             new CreatePost(user);
             
         } else if (e.getActionCommand().equals("Article")) {
-            
+            new  CreateArticle(user);
         }
 
     }
