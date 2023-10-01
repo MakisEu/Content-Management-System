@@ -13,6 +13,9 @@ public class Post extends Content{
     public Post(String Title, String text,String user) {
         this(Title, text,user, charLimitPost);
     }
+    public 	Post(String Title, String text,String user, int charLimit, String id, int votes){
+        super(Title, new BodyPost(text),user, charLimit, id, votes);
+    }
     public Post(String Title, String text,String user,int limit) {
         super(Title, new BodyPost(text),user, limit);
         this.ID=this.ID.replace("object","Post");

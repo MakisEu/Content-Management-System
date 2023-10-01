@@ -1,8 +1,12 @@
 package api;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
-import java.util.Vector;
+
+
 
 /**
  * The class for a normal user
@@ -10,10 +14,9 @@ import java.util.Vector;
 public class User {
     String userID;
     boolean isAdmin=false;
-    //contend id, liked/disliked
-    HashMap<String,Integer> liked;
-    ArrayList<Vector<String>> myComments;
     ControlSystem system;
+    Connection con;
+    Helper h;
 
     /**
      * Base constructor of User
@@ -21,10 +24,10 @@ public class User {
      * @param system the control system
      */
     public User(String id,ControlSystem system){
+        con=system.connection;
+        h=new Helper(con);
         userID=id;
         this.system=system;
-        liked=new HashMap<>();
-        myComments=new ArrayList<>();
     }
 
     /**
@@ -37,6 +40,52 @@ public class User {
      */
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
+        try {
+            Statement st=con.createStatement();
+            ResultSet rs=st.executeQuery("SELECT * FROM content WHERE title= \'"+h.Encode(Title)+"\' AND owner= \'"+userID+"\';");
+            if (rs.next()){
+                st.close();
+                return "You already have content with the same title!";
+
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        switch (type){
+            case ("Post"):{
+                //Create Post
+                BodyPost bp=((BodyPost)body);
+                if (bp.getText().length()<Post.charLimitPost) {
+                    Post p = new Post(h.Encode(Title), h.Encode(bp.getText()), userID);
+                    b=p;
+                }
+                else {
+                    return ("Max Limit of the Post's Text Exceeded by"+String.valueOf(bp.getText().length()-Post.charLimitPost)+"Characters.");
+                }
+                break;
+            }
+            case ("Article"):{
+                //Create Article
+                BodyArticle ba=((BodyArticle) body);
+                String author=null;
+                if (extras!=null && extras.get("Author")!=null){
+                    author=h.Encode(extras.get("Author"));
+                }
+                if (ba.getText().length()<Article.charLimitPost) {
+                    Article p = new Article(author,h.Encode(Title), h.Encode(ba.getText()), userID);
+                    b=p;
+                }
+                else {
+                    return ("Max Limit of the Post's Text Exceeded by"+String.valueOf(ba.getText().length()-Post.charLimitPost)+"Characters.");
+                }
+                break;
+
+
+            }
+        }
+
+        /*
         if (system.content.get(userID)!=null) {
             for (String key : system.content.get(userID).keySet()) {
                 if (system.content.get(userID).get(key) != null) {
@@ -77,9 +126,9 @@ public class User {
 
 
             }
-        }
+        }*/
         if (!(b==null)){
-            if (system.AddContent(b)){
+            if (system.AddContent(b,type)){
                 return "Added successfully.";
             }
             return "This content already exists.";
@@ -96,13 +145,9 @@ public class User {
      * @return          The control string of ControlSystem.AddComment() or that the operation was completed successfully
      */
     public String AddComment(String text,String contentID){
-        Comment comment=new Comment(text,userID);
+        Comment comment=new Comment(h.Encode(text),userID);
         String s=system.AddComment(comment,contentID);
         if (s.contains("#")){
-            Vector v=new Vector<>();
-            v.add(contentID);
-            v.add(s);
-            myComments.add(v);
             return "Added successfully.";
         }
         else{
@@ -117,12 +162,18 @@ public class User {
      * @return          Control string of what happened
      */
     public String EditComment(String commentID,String text) {
-        Comment comment=this.getComment(commentID);
+        Comment comment=getComment(commentID);
         if (comment==null){
             return "This comment does not exist";
         }
         if (comment.getUser().equals(userID) || isAdmin) {
-            comment.Edit(text);
+            try{
+                Statement st=con.createStatement();
+                String s="UPDATE comment SET text = \'"+h.Encode(text)+"\' WHERE unique_id=\'"+commentID+"\';";
+                st.execute(s);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             return ("Comment has been edited.");
         }
         return ("You do not have sufficient access right to edit this comment.");
@@ -140,7 +191,8 @@ public class User {
             return "This comment does not exist";
         }
         if (comment.getUser().equals(userID) || isAdmin) {
-            system.DeleteComment(commentID,contentID);
+            system.DeleteComment(commentID);
+
             return ("Comment has been deleted.");
         }
         return ("You do not have sufficient access right to delete this comment.");
@@ -163,33 +215,41 @@ public class User {
     /**
      * Edit's a content of the user
      * @param contentId The id of the content that will be edited
-     * @param title     The new Title of the content.  If it is null, it will not get changed
      * @param body      The new body of the content.   If it is null, it will not get changed
      * @param extras    The new extra fields of the content. If an extra field is not in extras, it will not be changed
      * @return          Control string of what happened
      */
-    public String EditContent(String contentId,String title,Body body,HashMap<String,String> extras){
+    public String EditContent(String contentId,Body body,HashMap<String,String> extras){
         Content content=getContent(contentId);
         if (content.getUser().equals(userID)||isAdmin){
-            if(title!=null){
-                content.setTitle(title);
-            }
             String type= content.getID().split("#")[0];
             if (extras.isEmpty()){return ("Content has been edited.");}
             switch (type){
                 case ("Post"):{
                     if (body!=null) {
-                        ((BodyPost)content.getBody()).setText(((BodyPost)body).getText());
+                        try{
+                            Statement st= con.createStatement();
+                            st.execute("UPDATE post SET body=\'"+h.Encode(((BodyPost)body).getText())+"\' WHERE content_id=\'"+contentId+"\';");
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+
                     return ("Content has been edited.");
                 }
                 case ("Article"):{
-                    if (body!=null) {
-                        ((BodyArticle)content.getBody()).setText(((BodyArticle)body).getText());
-                    }
+                    String auth=((Article)content).getAuthor();
                     for (String s: extras.keySet()) {
                         if (s.equals("Author")){
-                            ((Article) content).setAuthor(extras.get(s));
+                           auth=h.Encode(extras.get("Author"));
+                        }
+                    }
+                    if (body!=null) {
+                        try{
+                            Statement st= con.createStatement();
+                            st.execute("UPDATE article SET body=\'"+h.Encode(((BodyArticle)body).getText())+"\', author=\'"+auth+"\'  WHERE content_id=\'"+contentId+"\';");
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                     return ("Content has been edited.");
@@ -204,74 +264,47 @@ public class User {
      * @param contentId The id of the content that will be liked/disliked
      */
     public boolean LikeContent(String contentId,boolean isLiked){
-        Integer contain=liked.get(contentId);
-        if (ControlSystem.content.get(contentId.split("#")[1]) !=null){
-            Content content=ControlSystem.content.get(contentId.split("#")[1]).get(contentId);
-            if (content!=null){
-                if (contain==null) {
-                    if (isLiked){
-                        liked.put(contentId,1);
-                        content.Like();
-                    }
-                    else{
-                        liked.put(contentId,-1);
-                        content.Dislike();
-                    }
-                }
-                else if (contain==1 && !isLiked){
-                    content.Dislike();
-                    liked.remove(contentId);
-
-                }
-                else if (contain==-1 && isLiked) {
-                    content.Like();
-                    liked.remove(contentId);
-                }
-                else{
+        Content content=getContent(contentId);
+        if (content==null){
+            return false;
+        }
+        try {
+            Statement st= con.createStatement();
+            ResultSet rs= st.executeQuery("SELECT liked FROM liked_content WHERE user_id=\'"+userID+"\' AND content_id = \'"+contentId+"\'; ");
+            if (rs.next()){
+                int liked=rs.getInt(1);
+                if ((liked==1 && isLiked) || (liked==-1 && !isLiked)){
                     return false;
+                } else {
+                    int l=-1;
+                    if (isLiked && liked == -1) {
+                        l=1;
+                    }
+                    st.execute("UPDATE content SET votes=" + (content.votes +l) + " WHERE content_id=\'" + contentId + "\';");
+                    st.execute("DELETE FROM liked_content WHERE user_id=\'" + userID + "\' AND content_id=\'" + contentId + "\' ;");
+                    return true;
                 }
-                return true;
             }
             else{
-                if (contain!=null){
-                    liked.remove(contentId);
+                int liked=-1;
+                if (isLiked){
+                    liked=1;
                 }
+                st.execute("INSERT INTO liked_content (user_id,content_id,liked) VALUES (\'"+userID+"\',\'"+contentId+"\',\'"+liked+"\'); ");
+                st.execute("UPDATE content SET votes="+(content.votes+liked)+" WHERE content_id=\'"+contentId+"\';");
+                return true;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        else{
-            if (contain!=null){
-                liked.remove(contentId);
-            }
-        }
-        return false;
     }
-
     /**
      * returns a comment
      * @param commentID the id of the comment that will be returned
      * @return          the comment
      */
     public Comment getComment(String commentID){
-        Comment c=null;
-        for (Vector<String> v:myComments){
-            if (v.get(1).equals(commentID)) {
-                if (ControlSystem.comments.get(v.get(0))!=null) {
-                    ArrayList<Comment> coms = ControlSystem.comments.get(v.get(0)).get(v.get(1).split("#")[0]);
-                    if (coms != null) {
-                        for (Comment com : coms) {
-                            if (com.getId().equals(commentID)) {
-                                return com;
-                            }
-                        }
-                        return c;
-                    }
-                }
-                else {
-                    myComments.remove(v);
-                }
-            }
-        }
-        return c;
+        return h.getComment(commentID);
     }
 
     /**
@@ -280,6 +313,6 @@ public class User {
      * @return          The content
      */
     public Content getContent(String contentID){
-        return ControlSystem.content.get(userID).get(contentID);
+        return h.getContent(contentID);
     }
 }

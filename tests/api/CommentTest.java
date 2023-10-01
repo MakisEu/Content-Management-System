@@ -16,9 +16,6 @@ class CommentTest {
 
     @AfterEach
     void tearDown() {
-        ControlSystem.comments=null;
-        ControlSystem.content=null;
-        //ControlSystem.liked=null;
     }
 
     @Test

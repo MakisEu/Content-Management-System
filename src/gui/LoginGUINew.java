@@ -88,6 +88,9 @@ public class LoginGUINew extends JPanel implements ActionListener {
                     if (type.equals("User")) {
                         new UserGUINew(Username);
                         frame.dispose();
+                    } else if (type.equals("Admin")) {
+                        new AdminGUINew(Username);
+                        frame.dispose();
                     }
                 }
             }

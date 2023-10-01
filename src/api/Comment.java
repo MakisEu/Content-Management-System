@@ -1,17 +1,25 @@
 package api;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Base class for a Comment
  */
 
-public class Comment {
+public class Comment implements Serializable {
     protected static int nextID=0;
-    private static int char_limit=250;
+    protected static int char_limit=250;
     private int likes;
     private String text,user,id;
     private ArrayList<Comment> replied_comments;
 
+
+    public Comment(String text,String user, String id, int likes){
+        this.likes=likes;
+        this.id=id;
+        this.user=user;
+        this.text=text;
+    }
     /**
      *
      * @param Text the text of the comment

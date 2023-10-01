@@ -1,5 +1,6 @@
 package api;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Vector;
@@ -8,6 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LoginTest {
 
+
+    @AfterEach
+    void tearDown() {
+        new ControlSystem().Clear();
+        //ControlSystem.liked=null;
+    }
     @Test
     void log_in() {
         ControlSystem controlSystem=new ControlSystem();
@@ -16,8 +23,8 @@ class LoginTest {
         Vector<String> v=new Vector<>();
         v.add("12345");
         v.add("User");
-        controlSystem.getAll_users().put("Jim",v);
-        assertEquals(login.Log_in("Jim","12345"),"Logged in successfully");
+        login.Sign_up("Jim","12345","User");
+        assertEquals(login.Log_in("Jim","12345").split("#")[0],"Logged in successfully");
 
     }
 
@@ -29,7 +36,7 @@ class LoginTest {
         Vector<String> v=new Vector<>();
         v.add("12345");
         v.add("User");
-        controlSystem.getAll_users().put("Jim",v);
+        login.Sign_up("Jim","12345","User");
         assertEquals(login.Sign_up("Jim","12345","Admin"),"This username is already taken");
 
 

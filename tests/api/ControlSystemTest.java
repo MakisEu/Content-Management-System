@@ -4,6 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControlSystemTest {
@@ -12,13 +15,23 @@ class ControlSystemTest {
     void setUp() {
         Content.nextID=0;
         Comment.nextID=0;
+       ControlSystem cs=new ControlSystem();
+       try {
+           Statement st=cs.connection.createStatement();
+           st.execute("INSERT INTO users (user_id,password,type) VALUES (\'me\',123,\'User\');");
+           st.execute("INSERT INTO users (user_id,password,type) VALUES (\'you\',123,\'User\');");
+           st.execute("INSERT INTO users (user_id,password,type) VALUES (\'guess?\',123,\'User\');");
+           st.execute("INSERT INTO users (user_id,password,type) VALUES (\'Noone\',123,\'User\');");
+
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
 
     }
 
     @AfterEach
     void tearDown() {
-        ControlSystem.comments=null;
-        ControlSystem.content=null;
+        new ControlSystem().Clear();
         //ControlSystem.liked=null;
     }
 
@@ -30,15 +43,15 @@ class ControlSystemTest {
         Post post2=new Post("title","LaText","you");
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
 
-        assertEquals(controlSystem.AddContent(post1),true);
-        assertEquals(controlSystem.AddContent(post1),false);
+        assertEquals(controlSystem.AddContent(post1,"Post"),true);
+        assertEquals(controlSystem.AddContent(post1,"Post"),false);
 
-        assertEquals(controlSystem.AddContent(article1),true);
-        assertEquals(controlSystem.AddContent(article1),false);
-        article1.user="you";
+        assertEquals(controlSystem.AddContent(article1,"Article"),true);
+        assertEquals(controlSystem.AddContent(article1,"Article"),false);
 
-        assertEquals(controlSystem.AddContent(article1),true);
-        assertEquals(controlSystem.AddContent(article1),false);
+
+        assertEquals(controlSystem.AddContent(post2,"post"),true);
+        assertEquals(controlSystem.AddContent(post2,"post"),false);
     }
 
     @Test
@@ -50,13 +63,16 @@ class ControlSystemTest {
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
         Comment comment1=new Comment("Nice comment!","me");
         Comment comment2=new Comment("Bad comment!","me");
-        controlSystem.AddContent(post1);
+        controlSystem.AddContent(post1,"Post");
+        Helper h=new Helper(controlSystem.connection);
+
         assertEquals(controlSystem.AddComment(comment1,post1.getID()).contains("#"),true);
-        assertNotNull(ControlSystem.comments.get(post1.getID()).get("me").get(0));
+        assertNotNull(h.getComment(comment1.getId()));
         assertEquals(controlSystem.AddComment(comment1,post1.getID()),"This comment already exist.");
-        assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment1.getUser()).get(0));
+        assertNotNull(h.getComment(comment1.getId()));
+        //assertNotNull(h.getComment() ControlSystem.comments.get(post1.getID()).get(comment1.getUser()).get(0));
         assertNotNull(controlSystem.AddComment(comment2,post1.getID()));
-        assertNotNull(ControlSystem.comments.get(post1.getID()).get(comment2.getUser()).get(1));
+        assertNotNull(h.getComment(comment2.getId()));// ControlSystem.comments.get(post1.getID()).get(comment2.getUser()).get(1));
     }
     /*@Test
     void updateLiked() {
@@ -84,17 +100,17 @@ class ControlSystemTest {
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
         Comment comment1=new Comment("Nice comment!","me");
         Comment comment2=new Comment("Bad comment!","me");
-        controlSystem.AddContent(post1);
-        controlSystem.AddContent(article1);
+        controlSystem.AddContent(post1,"Post");
+        controlSystem.AddContent(article1,"Article");
 
         controlSystem.AddComment(comment1,post1.getID());
         String c1=post1.getID(),c2=article1.getID();
-        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),true);
-        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),false);
+        assertEquals(controlSystem.DeleteComment(comment1.getId()),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId()),false);
         controlSystem.AddComment(comment1,c1);
         controlSystem.AddComment(comment1,c2);
-        assertEquals(controlSystem.DeleteComment(comment1.getId(),c1),true);
-        assertEquals(controlSystem.DeleteComment(comment1.getId(),c2),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId()),true);
+        assertEquals(controlSystem.DeleteComment(comment1.getId()),false);
 
     }
 
@@ -105,29 +121,19 @@ class ControlSystemTest {
         Article article1=new Article("Totally legit author","No title","A text","me");
         Post post2=new Post("title","LaText","you");
         Article article2=new Article("The user above","why is writing tests so boring?","title is self-explanatory","guess?");
-        controlSystem.AddContent(post1);
-        controlSystem.AddContent(post2);
-        controlSystem.AddContent(article1);
-        controlSystem.AddContent(article2);
+        controlSystem.AddContent(post1,"Post");
+        controlSystem.AddContent(post2,"Post");
+        controlSystem.AddContent(article1,"Article");
+        controlSystem.AddContent(article2,"Article");
+        Helper hp=new Helper(controlSystem.connection);
+        assertNotNull(hp.getContent(post1.getID()));
 
-        assertNotNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
+        //assertNotNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
         controlSystem.DeleteContent(post1);
-        assertNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
-        assertNull(ControlSystem.comments.get(post1.getID()));
+        assertNull(hp.getContent(post1.getID()));
+        //assertNull(ControlSystem.content.get(post1.getUser()).get(post1.getID()));
+        //assertNull(ControlSystem.comments.get(post1.getID()));
     }
 
-    @Test
-    void getBanned() {
-        ControlSystem controlSystem=new ControlSystem();
-        controlSystem.getBanned().put("Jim",true);
-        controlSystem.getBanned().put("Makis",true);
-        controlSystem.getBanned().put("Nick",true);
-        assertEquals(controlSystem.getBanned().containsKey("Jim"),true);
-        assertEquals(controlSystem.getBanned().containsKey("Makis"),true);
-        assertEquals(controlSystem.getBanned().containsKey("Nick"),true);
-        assertEquals(controlSystem.getBanned().get("Jim"),true);
-        assertEquals(controlSystem.getBanned().get("Makis"),true);
-        assertEquals(controlSystem.getBanned().get("Nick"),true);
-    }
 
 }

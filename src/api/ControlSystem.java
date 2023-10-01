@@ -1,6 +1,7 @@
 package api;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -8,31 +9,21 @@ import java.util.Vector;
  * The Main Control Unit class for the CMS
  */
 public class ControlSystem {
-    //String=ContentID, comment.user()
-    protected static HashMap<String, HashMap<String,ArrayList<Comment>>> comments;
-    //First String=ContentID, Second String=UserId
-    //protected static HashMap<String, HashMap<String,Integer>>liked;
-    //First String=UserId, Second String=ContentId
-    protected static HashMap<String,HashMap<String,Content>> content;
     protected static HashMap<String,Boolean> banned;
     //username, (password,type)
-    private static HashMap<String, Vector<String>> all_users;
+    Connection connection;
 
 
     /**
      * Base constructor of ControlSystem
      */
     public ControlSystem(){
-        comments=new HashMap<>();
-        //liked=new HashMap<>();
-        content=new HashMap<>();
-        banned=new HashMap<>();
-        all_users=new HashMap<>();
-
-    }
-
-    public HashMap<String,Boolean> getBanned(){
-        return banned;
+        try {
+            String dbURL1 = "jdbc:postgresql:CMS?user=makis";
+            connection = DriverManager.getConnection(dbURL1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -40,9 +31,34 @@ public class ControlSystem {
      * @param content The content that will be added
      * @return If the operation happened
      */
-    public boolean AddContent(Content content){
+    public boolean AddContent(Content content,String type){
         String uid= content.getUser();
-        if (this.content.get(uid)==null){
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id = \'"+content.getID()+"\' AND content_owner = \'"+uid+"\';");
+            if (rs.next()){
+                st.close();
+                return false;
+            }
+            else{
+                boolean executed=st.execute("INSERT INTO contentdb (content_id,content_owner,type)\n" +
+                        "VALUES (\'"+content.getID()+"\', \'"+content.getUser()+"\', \'"+type+"\');");
+                executed=st.execute("INSERT INTO content (title,owner,charlimit,votes,content_id)\n"+
+                        "VALUES(\'"+content.getTitle()+"\', \'"+content.getUser()+"\', \'"+ content.getCharLimit() +"\', \'"+content.getVotes()+"\', \'"+content.getID()+"\')");
+                if (type.toLowerCase().equals("post")){
+                    executed=st.execute("INSERT INTO post (body, content_id) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\');");
+                } else if (type.toLowerCase().equals("article")) {
+                    executed=st.execute("INSERT INTO article (body, content_id,author) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\', \'"+((Article)content).getAuthor()+"\');");
+                }
+                st.close();
+                return true;
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*if (this.content.get(uid)==null){
             this.content.put(uid,new HashMap<>());
         }
         if (!(this.content.get(uid).get(content.getID())==null)){
@@ -51,7 +67,7 @@ public class ControlSystem {
         this.content.get(uid).put(content.getID(),content);
         comments.put(content.getID(),new HashMap<>());
         //liked.put(content.getID(),new HashMap<>());
-        return true;
+        return true;*/
     }
 
     /**
@@ -60,44 +76,50 @@ public class ControlSystem {
      * @param contentID The content id of the content it wll be added to
      * @return Control string to inform about what happened
      */
-    public String AddComment(Comment comment,String contentID){
-        if (content.get(contentID.split("#")[1]) == null){
-            return "this content does not exist anymore.";
-        }
-        if (this.comments.get(contentID)==null){
-            this.comments.put(contentID,new HashMap<>());
-            this.comments.get(contentID).put(comment.getUser(),new ArrayList<>());
-        }
-        else if (this.comments.get(contentID).get(comment.getUser())==null){
-            this.comments.get(contentID).put(comment.getUser(),new ArrayList<>());
+    public String AddComment(Comment comment,String contentID) {
+        //AddCommentContent
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id=\'"+contentID+"\'");
+            if (!rs.next()){
+                st.close();
+                return "This content does not exist";
+            }
 
+            else {
+                rs=st.executeQuery("SELECT * FROM comment WHERE unique_id = \'" + comment.getId() + "\';");
+                if (rs.next()) {
+                    st.close();
+                    return "This comment already exist.";
+                }
+                else {
+                    st.execute("INSERT INTO comment (text,owner,unique_id,charlimit,votes,parent_content,parent_comment) VALUES (\'" + comment.getText() + "\',\'" + comment.getUser() + "\',\'" + comment.getId() + "\',\'" + Comment.char_limit + "\',\'" + comment.getLikes() + "\',\'" + contentID + "\',NULL)");
+                    st.close();
+                    return comment.getId();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        if (this.comments.get(contentID).get(comment.getUser()).contains(comment)){
-            return "This comment already exist.";
-        }
-        this.comments.get(contentID).get(comment.getUser()).add(comment);
-        return comment.getId();
     }
-
     /**
      * Deletes a comment from a content
      * @param commentID the id of the comment that will be deleted
-     * @param contentID the id of the content that has the comment
      * @return if the deletion was successful
      */
-    public boolean DeleteComment(String commentID,String contentID){
+    public boolean DeleteComment(String commentID){
 
-        if (comments.get(contentID)!=null) {
-            ArrayList<Comment> c = comments.get(contentID).get(commentID.split("#")[0]);
-            if (c != null) {
-                for (Comment comment : c) {
-                    if (comment.getId() == commentID) {
-                        c.remove(comment);
-                        return true;
-                    }
-                }
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM comment WHERE unique_id=\'" + commentID + "\';");
+            if (rs.next()){
+                Boolean b=st.execute("DELETE FROM comment WHERE unique_id=\'"+commentID+"\';");
+                return true;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+
         return false;
     }
 
@@ -106,13 +128,25 @@ public class ControlSystem {
      * @param content the content that will be deleted
      */
     public void DeleteContent(Content content){
-        String ContentID= content.getID();
-        comments.remove(ContentID);
-        //liked.remove(ContentID);//
-        this.content.get(content.getUser()).remove(content.getID());
+        try {
+            Statement st= connection.createStatement();
+            new Helper(connection).getContent(content.getID());
+            Boolean rs=st.execute("DELETE FROM contentdb WHERE content_owner = \'"+content.getUser()+"\' AND content_id = \'"+content.getID()+"\';");
+            st.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public HashMap<String,Vector<String>> getAll_users(){
-        return all_users;
+    public void Clear(){
+        try {
+            Statement st= connection.createStatement();
+            st.execute("TRUNCATE users CASCADE;");
+            st.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

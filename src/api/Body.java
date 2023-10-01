@@ -1,3 +1,6 @@
 package api;
-public class Body {
+
+import java.io.Serializable;
+
+public class Body implements Serializable {
 }

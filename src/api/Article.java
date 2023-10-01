@@ -35,6 +35,11 @@ public class Article extends Post{
         Comment comment = new Comment(Text, uid);
         replied_comments.add(comment);
     }
+    public 	Article(String Title, String text,String user, int charLimit, String id, int votes,String author){
+        super(Title, text,user, charLimit, id, votes);
+        this.Body=new BodyArticle(text);
+        this.author=author;
+    }
 
     /**
      *

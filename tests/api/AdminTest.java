@@ -12,12 +12,12 @@ class AdminTest {
     void setUp() {
         Content.nextID=0;
         Comment.nextID=0;
+        new ControlSystem().Clear();
     }
 
     @AfterEach
     void tearDown() {
-        ControlSystem.comments=null;
-        ControlSystem.content=null;
+        new ControlSystem().Clear();
         //ControlSystem.liked=null;
     }
 
@@ -25,10 +25,11 @@ class AdminTest {
     void ban() {
         ControlSystem system=new ControlSystem();
         User user1=new User("Jim",system);
-        assertEquals(system.getBanned().containsKey(user1.userID),false);
-        system.getBanned().put(user1.userID,true);
-        assertEquals(system.getBanned().containsKey(user1.userID),true);
-
+        Login login=new Login(system);
+        login.Sign_up("Jim","12345","User");
+        Admin admn=new Admin("JimAdmin",system);
+        assertEquals(admn.Ban(user1.userID),"You banned this user successfully!");
+        assertEquals(admn.Ban(user1.userID),"This user is already banned!");
 
     }
 
@@ -36,11 +37,11 @@ class AdminTest {
     void unBan() {
         ControlSystem system=new ControlSystem();
         User user1=new User("Jim",system);
-        system.getBanned().put(user1.userID,true);
-        assertEquals(system.getBanned().containsKey(user1.userID),true);
-
-        system.getBanned().remove(user1.userID);
-        assertEquals(system.getBanned().containsKey(user1.userID),false);
-
+        Login login=new Login(system);
+        login.Sign_up("Jim","12345","User");
+        Admin admn=new Admin("JimAdmin",system);
+        assertEquals(admn.Ban(user1.userID),"You banned this user successfully!");
+        assertEquals(admn.UnBan(user1.userID),"This user got unbanned successfully!");
+        assertEquals(admn.UnBan(user1.userID),"You cannot unban an unbanned user!");
     }
 }

@@ -15,8 +15,8 @@ public class UserGUINew extends JFrame {
         user=new User(username,new ControlSystem());
         this.setTitle("Content Management System");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setBackground(new Color(255,255,255));
-        this.setForeground(new Color(0,0,0));
+        this.getContentPane().setBackground(new Color(255,255,255));
+        this.getContentPane().setForeground(new Color(0,0,0));
 
         tabs=new JTabbedPane();
         tabs.add("Search",new Search(this,user));

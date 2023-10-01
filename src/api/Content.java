@@ -1,15 +1,25 @@
 package api;
 
+import java.io.Serializable;
+
 /**
  * Base class every type of content inherits
  */
-public class Content{
+public class Content implements Serializable {
 	protected static int nextID=0;
 	String Title,user,ID;
 	Body Body;
 	int charLimit,votes=0;
 
 
+	Content(String Title, Body body,String user, int charLimit, String id, int votes){
+		this.Body=(Body) body;
+		this.Title=Title;
+		this.user=user;
+		this.charLimit=charLimit;
+		this.ID=id;
+		this.votes=votes;
+	}
 	/**
 	 * @param Title
 	 * @param BodyPost
@@ -23,7 +33,6 @@ public class Content{
 		this.charLimit=charLimit;
 		this.ID="object#"+user+"#"+String.valueOf(nextID);
 		nextID++;
-
 	}
 
 	/**
