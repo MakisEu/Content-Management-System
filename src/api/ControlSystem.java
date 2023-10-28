@@ -34,21 +34,50 @@ public class ControlSystem {
     public boolean AddContent(Content content,String type){
         String uid= content.getUser();
         try {
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id = \'"+content.getID()+"\' AND content_owner = \'"+uid+"\';");
+            //Statement st = connection.createStatement();
+            //ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id = \'"+content.getID()+"\' AND content_owner = \'"+uid+"\';");
+            PreparedStatement st=connection.prepareStatement("SELECT * FROM contentdb WHERE content_id = ? AND content_owner = ?;");
+            st.setString(1, content.getID());
+            st.setString(2,uid);
+            ResultSet rs=st.executeQuery();
             if (rs.next()){
                 st.close();
                 return false;
             }
             else{
-                boolean executed=st.execute("INSERT INTO contentdb (content_id,content_owner,type)\n" +
-                        "VALUES (\'"+content.getID()+"\', \'"+content.getUser()+"\', \'"+type+"\');");
-                executed=st.execute("INSERT INTO content (title,owner,charlimit,votes,content_id)\n"+
-                        "VALUES(\'"+content.getTitle()+"\', \'"+content.getUser()+"\', \'"+ content.getCharLimit() +"\', \'"+content.getVotes()+"\', \'"+content.getID()+"\')");
+                boolean executed;
+                st=connection.prepareStatement("INSERT INTO contentdb (content_id,content_owner,type)\n" +
+                        "VALUES (?,?,?);");
+                st.setString(1, content.getID());
+                st.setString(2, content.getUser());
+                st.setString(3,type);
+                executed= st.execute();
+                //boolean executed=st.execute("INSERT INTO contentdb (content_id,content_owner,type)\n" +
+                //      "VALUES (\'"+content.getID()+"\', \'"+content.getUser()+"\', \'"+type+"\');");
+                st=connection.prepareStatement("INSERT INTO content (title,owner,charlimit,votes,content_id)\n"+
+                        "VALUES(?,?,?,?,?)");
+                st.setString(1, content.getTitle());
+                st.setString(2, content.getUser());
+                st.setInt(3,content.getCharLimit());
+                st.setInt(4,content.getVotes());
+                st.setString(5, content.getID());
+                executed= st.execute();
+                //executed=st.execute("INSERT INTO content (title,owner,charlimit,votes,content_id)\n"+
+                //       "VALUES(\'"+content.getTitle()+"\', \'"+content.getUser()+"\', \'"+ content.getCharLimit() +"\', \'"+content.getVotes()+"\', \'"+content.getID()+"\')");
+
                 if (type.toLowerCase().equals("post")){
-                    executed=st.execute("INSERT INTO post (body, content_id) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\');");
+                    st=connection.prepareStatement("INSERT INTO post (body, content_id) VALUES (?,?);");
+                    st.setString(1, ((BodyPost)content.getBody()).getText());
+                    st.setString(2, content.getID());
+                    executed= st.execute();
+                    //executed=st.execute("INSERT INTO post (body, content_id) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\');");
                 } else if (type.toLowerCase().equals("article")) {
-                    executed=st.execute("INSERT INTO article (body, content_id,author) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\', \'"+((Article)content).getAuthor()+"\');");
+                    st=connection.prepareStatement("INSERT INTO article (body, content_id,author) VALUES (?,?,?);");
+                    st.setString(1, ((BodyArticle)content.getBody()).getText());
+                    st.setString(2, content.getID());
+                    st.setString(3, ((Article)content).getAuthor());
+                    executed= st.execute();
+                    //executed=st.execute("INSERT INTO article (body, content_id,author) VALUES (\'"+((BodyPost)content.getBody()).getText()+"\',\'"+content.getID()+"\', \'"+((Article)content).getAuthor()+"\');");
                 }
                 st.close();
                 return true;
@@ -79,21 +108,37 @@ public class ControlSystem {
     public String AddComment(Comment comment,String contentID) {
         //AddCommentContent
         try {
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id=\'"+contentID+"\'");
+            //Statement st = connection.createStatement();
+            PreparedStatement st=connection.prepareStatement("SELECT * FROM contentdb WHERE content_id= ?");
+            st.setString(1, contentID);
+            ResultSet rs= st.executeQuery();
+            //ResultSet rs = st.executeQuery("SELECT * FROM contentdb WHERE content_id=\'"+contentID+"\'");
+
             if (!rs.next()){
                 st.close();
                 return "This content does not exist";
             }
 
             else {
-                rs=st.executeQuery("SELECT * FROM comment WHERE unique_id = \'" + comment.getId() + "\';");
+                st=connection.prepareStatement("SELECT * FROM comment WHERE unique_id = ?;");
+                st.setString(1, comment.getId());
+                rs= st.executeQuery();
+                //rs=st.executeQuery("SELECT * FROM comment WHERE unique_id = \'" + comment.getId() + "\';");
                 if (rs.next()) {
                     st.close();
                     return "This comment already exist.";
                 }
                 else {
-                    st.execute("INSERT INTO comment (text,owner,unique_id,charlimit,votes,parent_content,parent_comment) VALUES (\'" + comment.getText() + "\',\'" + comment.getUser() + "\',\'" + comment.getId() + "\',\'" + Comment.char_limit + "\',\'" + comment.getLikes() + "\',\'" + contentID + "\',NULL)");
+                    st=connection.prepareStatement("INSERT INTO comment (text,owner,unique_id,charlimit,votes,parent_content,parent_comment) VALUES (?,?,?,?,?,?,?)");
+                    st.setString(1, comment.getText());
+                    st.setString(2, comment.getUser());
+                    st.setString(3, comment.getId());
+                    st.setInt(4, comment.char_limit);
+                    st.setInt(5, comment.getLikes());
+                    st.setString(6,contentID);
+                    st.setString(7,null);
+                    st.execute();
+                    //st.execute("INSERT INTO comment (text,owner,unique_id,charlimit,votes,parent_content,parent_comment) VALUES (\'" + comment.getText() + "\',\'" + comment.getUser() + "\',\'" + comment.getId() + "\',\'" + Comment.char_limit + "\',\'" + comment.getLikes() + "\',\'" + contentID + "\',NULL)");
                     st.close();
                     return comment.getId();
                 }
@@ -110,10 +155,16 @@ public class ControlSystem {
     public boolean DeleteComment(String commentID){
 
         try {
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM comment WHERE unique_id=\'" + commentID + "\';");
+            //Statement st = connection.createStatement();
+            //ResultSet rs = st.executeQuery("SELECT * FROM comment WHERE unique_id=\'" + commentID + "\';");
+            PreparedStatement st=connection.prepareStatement("SELECT * FROM comment WHERE unique_id= ?;");
+            st.setString(1, commentID);
+            ResultSet rs= st.executeQuery();
             if (rs.next()){
-                Boolean b=st.execute("DELETE FROM comment WHERE unique_id=\'"+commentID+"\';");
+                st=connection.prepareStatement("DELETE FROM comment WHERE unique_id= ?;");
+                st.setString(1,commentID);
+                st.execute();
+                //st.execute("DELETE FROM comment WHERE unique_id=\'"+commentID+"\';");
                 return true;
             }
         } catch (SQLException e) {
@@ -129,9 +180,13 @@ public class ControlSystem {
      */
     public void DeleteContent(Content content){
         try {
-            Statement st= connection.createStatement();
+            //Statement st= connection.createStatement();
             new Helper(connection).getContent(content.getID());
-            Boolean rs=st.execute("DELETE FROM contentdb WHERE content_owner = \'"+content.getUser()+"\' AND content_id = \'"+content.getID()+"\';");
+            //Boolean rs=st.execute("DELETE FROM contentdb WHERE content_owner = \'"+content.getUser()+"\' AND content_id = \'"+content.getID()+"\';");
+            PreparedStatement st=connection.prepareStatement("DELETE FROM contentdb WHERE content_owner = ? AND content_id = ? ;");
+            st.setString(1, content.getUser());
+            st.setString(2, content.getID());
+            st.execute();
             st.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);

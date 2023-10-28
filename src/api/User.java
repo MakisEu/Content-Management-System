@@ -1,9 +1,7 @@
 package api;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -41,8 +39,11 @@ public class User {
     public String AddContent(String type, String Title,Body body,HashMap<String,String> extras){
         Content b=null;
         try {
-            Statement st=con.createStatement();
-            ResultSet rs=st.executeQuery("SELECT * FROM content WHERE title= \'"+h.Encode(Title)+"\' AND owner= \'"+userID+"\';");
+            PreparedStatement st=con.prepareStatement("SELECT * FROM content WHERE title= ? AND owner= ? ;");
+            st.setString(1,Title);
+            st.setString(2,userID);
+            ResultSet rs=st.executeQuery();
+            //ResultSet rs=st.executeQuery("SELECT * FROM content WHERE title= \'"+h.Encode(Title)+"\' AND owner= \'"+userID+"\';");
             if (rs.next()){
                 st.close();
                 return "You already have content with the same title!";
@@ -57,7 +58,7 @@ public class User {
                 //Create Post
                 BodyPost bp=((BodyPost)body);
                 if (bp.getText().length()<Post.charLimitPost) {
-                    Post p = new Post(h.Encode(Title), h.Encode(bp.getText()), userID);
+                    Post p = new Post(Title, bp.getText(), userID);
                     b=p;
                 }
                 else {
@@ -70,10 +71,10 @@ public class User {
                 BodyArticle ba=((BodyArticle) body);
                 String author=null;
                 if (extras!=null && extras.get("Author")!=null){
-                    author=h.Encode(extras.get("Author"));
+                    author=extras.get("Author");
                 }
                 if (ba.getText().length()<Article.charLimitPost) {
-                    Article p = new Article(author,h.Encode(Title), h.Encode(ba.getText()), userID);
+                    Article p = new Article(author,Title, ba.getText(), userID);
                     b=p;
                 }
                 else {
@@ -145,7 +146,7 @@ public class User {
      * @return          The control string of ControlSystem.AddComment() or that the operation was completed successfully
      */
     public String AddComment(String text,String contentID){
-        Comment comment=new Comment(h.Encode(text),userID);
+        Comment comment=new Comment(text,userID);
         String s=system.AddComment(comment,contentID);
         if (s.contains("#")){
             return "Added successfully.";
@@ -168,9 +169,13 @@ public class User {
         }
         if (comment.getUser().equals(userID) || isAdmin) {
             try{
-                Statement st=con.createStatement();
-                String s="UPDATE comment SET text = \'"+h.Encode(text)+"\' WHERE unique_id=\'"+commentID+"\';";
-                st.execute(s);
+                //Statement st=con.createStatement();
+                PreparedStatement st=con.prepareStatement("UPDATE comment SET text = ? WHERE unique_id= ?;");
+                st.setString(1,text);
+                st.setString(2,commentID);
+                //ResultSet rs=st.executeQuery();
+                //String s="UPDATE comment SET text = \'"+h.Encode(text)+"\' WHERE unique_id=\'"+commentID+"\';";
+                st.execute();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -228,26 +233,33 @@ public class User {
                 case ("Post"):{
                     if (body!=null) {
                         try{
-                            Statement st= con.createStatement();
-                            st.execute("UPDATE post SET body=\'"+h.Encode(((BodyPost)body).getText())+"\' WHERE content_id=\'"+contentId+"\';");
+                            //Statement st= con.createStatement();
+                            PreparedStatement st=con.prepareStatement("UPDATE post SET body= ? WHERE content_id= ? ;");
+                            st.setString(1,((BodyPost)body).getText());
+                            st.setString(2,contentId);
+                            st.execute();
+                            //ResultSet rs=st.executeQuery();
+                            //st.execute("UPDATE post SET body=\'"+h.Encode(((BodyPost)body).getText())+"\' WHERE content_id=\'"+contentId+"\';");
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
                     }
-
                     return ("Content has been edited.");
                 }
                 case ("Article"):{
                     String auth=((Article)content).getAuthor();
-                    for (String s: extras.keySet()) {
-                        if (s.equals("Author")){
-                           auth=h.Encode(extras.get("Author"));
-                        }
+                    if (extras.containsKey("Author")){
+                        auth=extras.get("Author");
                     }
                     if (body!=null) {
                         try{
-                            Statement st= con.createStatement();
-                            st.execute("UPDATE article SET body=\'"+h.Encode(((BodyArticle)body).getText())+"\', author=\'"+auth+"\'  WHERE content_id=\'"+contentId+"\';");
+                            //Statement st= con.createStatement();
+                            PreparedStatement st=con.prepareStatement("UPDATE article SET body= ?, author= ?  WHERE content_id= ?;");
+                            st.setString(1,((BodyPost)body).getText());
+                            st.setString(2,auth);
+                            st.setString(3,contentId);
+                            st.execute();
+                            //st.execute("UPDATE article SET body=\'"+h.Encode(((BodyArticle)body).getText())+"\', author=\'"+auth+"\'  WHERE content_id=\'"+contentId+"\';");
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -269,8 +281,12 @@ public class User {
             return false;
         }
         try {
-            Statement st= con.createStatement();
-            ResultSet rs= st.executeQuery("SELECT liked FROM liked_content WHERE user_id=\'"+userID+"\' AND content_id = \'"+contentId+"\'; ");
+            //Statement st= con.createStatement();
+            //ResultSet rs= st.executeQuery("SELECT liked FROM liked_content WHERE user_id=\'"+userID+"\' AND content_id = \'"+contentId+"\'; ");
+            PreparedStatement st=con.prepareStatement("SELECT liked FROM liked_content WHERE user_id= ? AND content_id = ? ; ");
+            st.setString(1,userID);
+            st.setString(2,contentId);
+            ResultSet rs=st.executeQuery();
             if (rs.next()){
                 int liked=rs.getInt(1);
                 if ((liked==1 && isLiked) || (liked==-1 && !isLiked)){
@@ -280,8 +296,16 @@ public class User {
                     if (isLiked && liked == -1) {
                         l=1;
                     }
-                    st.execute("UPDATE content SET votes=" + (content.votes +l) + " WHERE content_id=\'" + contentId + "\';");
-                    st.execute("DELETE FROM liked_content WHERE user_id=\'" + userID + "\' AND content_id=\'" + contentId + "\' ;");
+                    st=con.prepareStatement("UPDATE content SET votes= ? WHERE content_id= ? ;");
+                    st.setInt(1,content.votes +l);
+                    st.setString(2,contentId);
+                    st.execute();
+                    //st.execute("UPDATE content SET votes=" + (content.votes +l) + " WHERE content_id=\'" + contentId + "\';");
+                    st=con.prepareStatement("DELETE FROM liked_content WHERE user_id= ? AND content_id= ? ;");
+                    st.setString(1,userID);
+                    st.setString(2,contentId);
+                    st.execute();
+                    //st.execute("DELETE FROM liked_content WHERE user_id=\'" + userID + "\' AND content_id=\'" + contentId + "\' ;");
                     return true;
                 }
             }
@@ -290,13 +314,35 @@ public class User {
                 if (isLiked){
                     liked=1;
                 }
-                st.execute("INSERT INTO liked_content (user_id,content_id,liked) VALUES (\'"+userID+"\',\'"+contentId+"\',\'"+liked+"\'); ");
-                st.execute("UPDATE content SET votes="+(content.votes+liked)+" WHERE content_id=\'"+contentId+"\';");
+                st=con.prepareStatement("INSERT INTO liked_content (user_id,content_id,liked) VALUES (?,?,?); ");
+                st.setString(1,userID);
+                st.setString(2,contentId);
+                st.setInt(3,liked);
+                st.execute();
+
+                st=con.prepareStatement("UPDATE content SET votes= ? WHERE content_id= ?;");
+                st.setInt(1,content.votes+liked);
+                st.setString(2,contentId);
+                st.execute();
+                //st.execute("INSERT INTO liked_content (user_id,content_id,liked) VALUES (\'"+userID+"\',\'"+contentId+"\',\'"+liked+"\'); ");
+                //st.execute("UPDATE content SET votes="+(content.votes+liked)+" WHERE content_id=\'"+contentId+"\';");
                 return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public ArrayList<String> getExactMatches(String title, String text, String user, String type,String[] extras){
+        ArrayList<String> matches=new ArrayList<>();
+        switch (type){
+            case ("All"):
+                break;
+            case ("Post"):
+                break;
+            case ("Author"):
+                break;
+        }
+        return matches;
     }
     /**
      * returns a comment

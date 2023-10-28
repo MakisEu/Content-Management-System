@@ -17,7 +17,7 @@ public class Login {
    public String Log_in(String username,String password){
       try {
          Statement st= system.connection.createStatement();
-         ResultSet rs=st.executeQuery("SELECT type FROM users WHERE user_id=\'"+h.Encode(username)+"\' AND password =\'"+h.Decode(password)+"\'");
+         ResultSet rs=st.executeQuery("SELECT type FROM users WHERE user_id=\'"+h.Encode(username)+"\' AND password =\'"+password+"\'");
          if (rs.next()){
             return "Logged in successfully#"+rs.getString(1);
          }
