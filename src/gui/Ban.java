@@ -69,7 +69,8 @@ import java.awt.event.ActionListener;
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Ban")) {
-            admin.Ban(UserToBan.getText());
+            String result=admin.Ban(UserToBan.getText());
+            JOptionPane.showMessageDialog(null,result);
         }
 
     }

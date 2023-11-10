@@ -69,7 +69,8 @@ public class Unban extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Unban")) {
-            admin.UnBan(UserToUnban.getText());
+            String result=admin.UnBan(UserToUnban.getText());
+            JOptionPane.showMessageDialog(null,result);
         }
 
     }
